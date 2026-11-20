@@ -1,0 +1,3073 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Generix · WMS API · Developer Documentation</title>
+<link rel="icon" href="Assets/logo-black.png" type="image/png">
+<style>
+  :root {
+    --generix-dark: #002333;
+    --generix-dark-soft: #0a3447;
+    --generix-orange: #F28A48;
+    --generix-orange-hover: #e07535;
+    --generix-orange-soft: #FDF0E7;
+    --generix-green:#00A59A;
+    --generix-green-soft:#DCF3F1;
+    --generix-blue:#CCEDEB;
+    --generix-blue-soft:#F8FDFC;
+    --white: #FFFFFF;
+    --gray-50: #FAFBFC;
+    --gray-100: #F2F5F8;
+    --gray-200: #E1E8EE;
+    --gray-300: #C5D2DC;
+    --gray-500: #6B7E8C;
+    --gray-700: #3A4A56;
+    --gray-900: #0F1B24;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: "General Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+    color: var(--generix-dark);
+    background: var(--white);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ── TOPBAR ─────────────────────────────────────────── */
+  .topbar {
+    background: var(--generix-dark);
+    border-bottom: 1px solid var(--generix-dark-soft);
+    padding: 18px 0;
+    position: sticky; top: 0; z-index: 100;
+    box-shadow: 0 1px 3px rgba(0,35,51,0.06);
+  }
+  .topbar-inner {
+    max-width: 1240px; margin: 0 auto; padding: 0 32px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .logo { display: flex; align-items: center; text-decoration: none; cursor: pointer; }
+  .logo img { height: 50px; width: auto; display: block; }
+  .nav { display: flex; align-items: center; gap: 32px; }
+  .nav a {
+    color: var(--gray-300); text-decoration: none;
+    font-size: 0.95rem; font-weight: 500; transition: color 0.2s;
+  }
+  .nav a:hover { color: var(--generix-orange); }
+  .nav .btn-contact {
+    background: var(--generix-orange); color: var(--white);
+    padding: 10px 20px; border-radius: 6px; font-weight: 600;
+    transition: background 0.2s;
+  }
+  .nav .btn-contact:hover { background: var(--generix-orange-hover); color: var(--white); }
+
+  /* ── HERO ───────────────────────────────────────────── */
+  .hero {
+    background: var(--generix-dark);
+    background-image: url('Assets/hero-bg.svg');    
+    background-size: 100%;
+    background-position: 40px center;
+    background-repeat: no-repeat;
+    color: var(--white);
+    padding: 170px 32px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: ""; position: absolute; inset: 0;
+    background-image:
+      radial-gradient(circle at 76%, rgba(221,199,186,0.40) 0%, transparent 20%),
+      radial-gradient(circle at 20%, rgba(0,35,51,0.15) 0%, transparent 40%);
+    pointer-events: none;
+  }
+  .hero-inner {
+    max-width: 1240px; margin: 0 auto; position: relative; z-index: 1;
+    display: grid; grid-template-columns: 1fr 0.55fr; gap: 60px; align-items: center;
+  }
+  .hero-tagline {
+    color: var(--generix-orange); font-size: 0.9rem; font-weight: 600;
+    letter-spacing: 3px; text-transform: uppercase;
+    margin-bottom: 24px; display: flex; align-items: center; gap: 12px;
+  }
+  .hero-tagline::before { content:""; width:40px; height:2px; background:var(--generix-orange); }
+  .hero h1 { font-size: 3.1rem; font-weight: 700; line-height: 1.1; margin-bottom: 24px; letter-spacing: -1px; }
+  .hero h1 .accent { color: var(--generix-orange); }
+  .hero-subtitle { font-size: 1.15rem; max-width: 620px; opacity: 0.85; margin-bottom: 40px; font-weight: 300; }
+  .cta-row { display: flex; gap: 14px; flex-wrap: wrap; }
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 14px 26px; border-radius: 6px; font-weight: 600;
+    text-decoration: none; transition: all 0.2s;
+    border: 2px solid transparent; font-size: 0.97rem; cursor: pointer;
+  }
+  .btn-primary { background: var(--generix-orange); color: var(--generix-dark); }
+  .btn-primary:hover { background: var(--generix-orange-hover); transform: translateY(-2px); box-shadow: 0 8px 20px rgba(242,138,72,0.3); }
+  .btn-secondary { background: transparent; color: var(--white); border-color: rgba(255,255,255,0.3); }
+  .btn-secondary:hover { border-color: var(--generix-orange); color: var(--generix-orange); }
+  .hero-visual { display: flex; align-items: center; justify-content: flex-end; }
+
+  /* ── STATS BAR ──────────────────────────────────────── */
+  .stats { background: var(--gray-50); padding: 44px 32px; border-bottom: 1px solid var(--gray-200); }
+  .stats-inner {
+    max-width: 1240px; margin: 0 auto;
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 30px; text-align: center;
+  }
+  .stat-number { font-size: 2.2rem; font-weight: 800; color: var(--generix-orange); line-height: 1; margin-bottom: 6px; }
+  .stat-label  { color: var(--gray-700); font-size: 0.9rem; font-weight: 500; }
+
+  /* ── SECTIONS ───────────────────────────────────────── */
+  .section { max-width: 1240px; margin: 0 auto; padding: 50px 32px; }
+  .section-header { margin-bottom: 0px; }
+  .section-eyebrow {
+    color: var(--generix-orange); font-size: 0.82rem; font-weight: 700;
+    letter-spacing: 2.5px; text-transform: uppercase;
+    margin-bottom: 14px; display: block;
+  }
+  .section-header h2 { font-size: 2.2rem; color: var(--generix-dark); margin-bottom: 14px; line-height: 1.2; font-weight: 700; letter-spacing: -0.5px; }
+  .section-header p  { color: var(--gray-500); font-size: 1.05rem; }
+
+  /* ── GRID / CARDS ───────────────────────────────────── */
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 22px; }
+
+  .card {
+    background: var(--white); border: 1px solid var(--gray-200);
+    border-radius: 12px; padding: 32px 28px;
+    text-decoration: none; color: inherit;
+    transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+    display: flex; flex-direction: column;
+    position: relative; overflow: hidden; cursor: pointer;
+    scroll-margin-top: 78px;
+  }
+  .card::before {
+    content: ""; position: absolute; top: 0; right: 0;
+    width: 0; height: 0; border-style: solid;
+    border-width: 0 56px 56px 0;
+    border-color: transparent var(--generix-orange-soft) transparent transparent;
+    transition: border-color 0.3s;
+  }
+  .card:hover { border-color: var(--generix-orange); box-shadow: 0 18px 36px rgba(0,35,51,0.1); transform: translateY(-5px); }
+  .card:hover::before { border-color: transparent var(--generix-orange) transparent transparent; }
+  .card.active { border-color: var(--generix-orange); box-shadow: 0 18px 36px rgba(0,35,51,0.1); transform: translateY(-5px); }
+
+  .card-icon {
+    width: 52px; height: 52px; background: var(--generix-dark);
+    border-radius: 12px; display: flex; align-items: center; justify-content: center;
+    font-family: "SFMono-Regular", Consolas, monospace;
+    font-size: 0.78rem; font-weight: 800; margin-bottom: 20px;
+    transition: all 0.3s; color: var(--generix-orange);
+    letter-spacing: -0.5px; line-height: 1.2; text-align: center; padding: 4px;
+  }
+  .card:hover .card-icon { background: var(--generix-orange); color: var(--white); transform: rotate(-5deg) scale(1.05); }
+
+  .card h3 { color: var(--generix-dark); font-size: 1.1rem !important; margin-bottom: 10px; font-weight: 700; min-height: 68px; }
+  .card p  { color: var(--gray-500); font-size: 0.9rem; flex-grow: 1; margin-bottom: 18px; line-height: 1.5; }
+  .card-meta { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
+
+  .badge {
+    display: inline-flex; align-items: center;
+    padding: 3px 8px; border-radius: 4px;
+    font-size: 0.7rem; font-weight: 700;
+    letter-spacing: 0.4px; text-transform: uppercase;
+  }
+  .badge-post   { background:#dcfce7; color:#15803d; }
+  .badge-get    { background:#dbeafe; color:#1d4ed8; }
+  .badge-put    { background:#fef3c7; color:#92400e; }
+  .badge-patch  { background:#ede9fe; color:#6d28d9; }
+  .badge-delete { background:#fee2e2; color:#dc2626; }
+  .badge-cat    { background: var(--gray-100); color: var(--gray-700); }
+  .badge-new    { background: #00A59A; color: #fff; letter-spacing: 0.6px;
+                  box-shadow: 0 0 0 0 rgba(22,163,74,.5); animation: pulseNew 1.8s infinite; }
+  @keyframes pulseNew {
+    0%   { box-shadow: 0 0 0 0 rgba(22,163,74,.45); }
+    70%  { box-shadow: 0 0 0 7px rgba(22,163,74,0); }
+    100% { box-shadow: 0 0 0 0 rgba(22,163,74,0); }
+  }
+  .badge-ver    { background:var(--generix-orange-soft); color:var(--generix-orange); }
+    /* Esquina NEW: tiñe el triángulo de la esquina y añade el texto encima */
+  .card.is-new::before {
+    border-color: transparent #00A59A transparent transparent !important;
+    border-width: 0 70px 70px 0;
+  }
+  .card.is-new:hover::before {
+    border-color: transparent #008C80 transparent transparent !important;
+  }
+  .card.is-new .new-flag {
+    position: absolute; top: 11px; right: 6px;
+    color: #fff; font-size: 0.62rem; font-weight: 800;
+    letter-spacing: 0.5px; transform: rotate(45deg);
+    pointer-events: none; z-index: 2;
+  }
+  .card.is-new.active {
+    border-color: var(--generix-green);
+    box-shadow: 0 18px 36px rgba(0, 35, 51, 0.1);
+    transform: translateY(-5px);
+}
+  /* Halo pulsante anclado en la punta de la esquina */
+  .card.is-new::after {
+    content: ""; position: absolute;
+    top: 0; right: 0;
+    width: 12px; height: 12px; border-radius: 50%;
+    background: transparent; z-index: 1; pointer-events: none;
+    animation: pulseCorner 1.8s ease-out infinite;
+  }
+  @keyframes pulseCorner {
+    0%   { box-shadow: 0 0 0 0 rgba(0,165,154,.55); }
+    70%  { box-shadow: 0 0 0 70px rgba(0,165,154,0); }
+    100% { box-shadow: 0 0 0 0 rgba(0,165,154,0); }
+  }
+/* Card bloqueada y en gris */
+.card.is-coming-soon {
+  background: #f3f3f3;
+  filter: grayscale(1);
+  opacity: 0.85;
+  cursor: not-allowed;
+}
+.card.is-coming-soon:hover,
+.card.is-coming-soon.active {
+  transform: none;
+  box-shadow: none;
+  border-color: #e0e0e0;
+}
+
+/* Esquina gris */
+.card.is-coming-soon::before,
+.card.is-coming-soon:hover::before {
+  border-color: transparent #9e9e9e transparent transparent !important;
+  border-width: 0 70px 70px 0;
+}
+
+.card.is-coming-soon .coming-soon-flag {
+  position: absolute; top: 4px; right: 1px;
+  color: #fff; font-size: 0.7rem; font-weight: 800;
+  letter-spacing: 0.5px; transform: rotate(45deg);
+  pointer-events: none; z-index: 2;
+}
+
+/* Sin halo pulsante (en el diseño esperado no aparece) */
+.card.is-coming-soon::after {
+  animation: none;
+}
+
+.card.is-coming-soon .card-link {
+  color: #555;
+}
+
+
+  .card-link {
+    color: var(--generix-orange); font-weight: 600; font-size: 0.85rem;
+    display: inline-flex; align-items: center; gap: 8px;
+    text-transform: uppercase; letter-spacing: 1px;
+  }
+  .card-link::after { content:"→"; transition:transform 0.2s; }
+  .card:hover .card-link::after { transform:translateX(6px); }
+
+  /* ── SKELETON ───────────────────────────────────────── */
+  .skeleton-card {
+    background: var(--gray-100); border: 1px solid var(--gray-200);
+    border-radius: 12px; padding: 32px 28px;
+    animation: pulse 1.5s ease-in-out infinite;
+  }
+  .sk-icon { width:52px; height:52px; background:var(--gray-200); border-radius:12px; margin-bottom:20px; }
+  .sk-line { height:13px; background:var(--gray-200); border-radius:4px; margin-bottom:10px; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.5} }
+
+  /* ── EMPTY / ERROR ──────────────────────────────────── */
+  .empty-state { text-align:center; padding:80px 32px; color:var(--gray-500); grid-column:1/-1; }
+  .empty-state .ei { font-size:3rem; margin-bottom:16px; }
+  .empty-state h3  { font-size:1.2rem; color:var(--gray-700); margin-bottom:8px; }
+  .empty-state code{ background:var(--gray-100); padding:2px 6px; border-radius:4px; font-family:monospace; font-size:0.85rem; }
+  .error-banner {
+    background:#fff1f0; border:1px solid #ffa39e; border-radius:8px;
+    padding:16px 20px; margin-bottom:24px; color:#cf1322; font-size:0.9rem; grid-column:1/-1;
+  }
+  .error-banner strong { display:block; margin-bottom:4px; }
+
+  /* ── DETAIL VIEW ────────────────────────────────────── */
+  #view-detail { display:none; }
+
+  /* Page header */
+  .dh {
+    background:linear-gradient(135deg, var(--generix-dark) 0%, var(--generix-dark-soft) 100%);
+    color:#fff; padding:54px 32px; position:relative; overflow:hidden;
+  }
+  .dh::before {
+    content:""; position:absolute; inset:0;
+    background:radial-gradient(circle at 80%, rgba(221,199,186,0.25) 0%, transparent 50%);
+    pointer-events:none;
+  }
+  .dhi { max-width:1240px; margin:0 auto; position:relative; z-index:1; }
+  .d-breadcrumb { margin-bottom:18px; }
+  .d-breadcrumb a { color:var(--generix-orange); text-decoration:none; font-size:.9rem; font-weight:500; }
+  .d-breadcrumb a:hover { text-decoration:underline; }
+  .d-breadcrumb span { color:rgba(255,255,255,.6); font-size:.9rem; margin:0 8px; }
+  .d-breadcrumb span.cur { color:rgba(255,255,255,.9); }
+  .ep-badges { display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:14px; }
+  .method-badge {
+    padding:4px 12px; border-radius:5px;
+    font-size:.78rem; font-weight:800; letter-spacing:1px;
+    font-family:"SFMono-Regular",Consolas,monospace;
+  }
+  .method-badge.POST{background:#dcfce7;color:#15803d}
+  .method-badge.GET{background:#dbeafe;color:#1d4ed8}
+  .method-badge.PUT{background:#fef3c7;color:#92400e}
+  .method-badge.PATCH{background:#ede9fe;color:#6d28d9}
+  .method-badge.DELETE{background:#fee2e2;color:#dc2626}
+  .ep-path {
+    font-family:"SFMono-Regular",Consolas,monospace; font-size:.86rem;
+    color:rgba(255,255,255,.8); background:rgba(255,255,255,.1); padding:4px 12px; border-radius:5px;
+  }
+  .version-pill { background:var(--generix-orange); color:var(--generix-dark); padding:3px 10px; border-radius:4px; font-size:.72rem; font-weight:700; }
+  .cat-pill { background:rgba(255,255,255,.1); color:rgba(255,255,255,.75); padding:3px 10px; border-radius:4px; font-size:.78rem; font-weight:600; }
+  .dh h1 { font-size:2.3rem; font-weight:700; margin-bottom:10px; letter-spacing:-.5px; }
+  .dh .ddesc { opacity:.85; font-size:1rem; max-width:700px; }
+
+  /* Tab navigation */
+  .tab-nav-outer {
+    position:sticky; top:87px; z-index:99;
+    background:var(--white);
+    border-bottom:1px solid var(--gray-200);
+  }
+  .tab-nav-inner { max-width:1240px; margin:0 auto; padding:0 32px; }
+  .tab-nav { display:flex; overflow-x:auto; scrollbar-width:thin; -webkit-overflow-scrolling:touch; }
+  .tab-nav::-webkit-scrollbar { height:4px; }
+  .tab-nav::-webkit-scrollbar-thumb { background:var(--gray-300); border-radius:2px; }
+  .tab-btn {
+    padding:15px 22px; border:none; background:transparent;
+    color:var(--gray-700); font-size:.95rem; font-weight:500;
+    cursor:pointer; white-space:nowrap; transition:all .25s;
+    border-bottom:3px solid transparent; font-family:inherit;
+  }
+  .tab-btn:hover { color:var(--generix-orange); background:var(--generix-orange-soft); }
+  .tab-btn.active { color:var(--generix-orange); border-bottom-color:var(--generix-orange); }
+
+  /* Tab panels */
+  .tab-panel { display:none; animation:fadeIn .3s ease-in; }
+  .tab-panel.active { display:block; }
+  @keyframes fadeIn { from{opacity:0} to{opacity:1} }
+
+  /* Descripción tab */
+  .desc-content { max-width:1240px; margin:0 auto; padding:48px 32px; }
+  .desc-content h2 { font-size:1.7rem; color:var(--generix-dark); margin-bottom:20px; padding-bottom:12px; border-bottom:2px solid var(--generix-orange-soft); }
+  .desc-content h3 { font-size:1.2rem; color:var(--generix-dark); margin:28px 0 12px; }
+  .desc-content p  { color:var(--gray-700); line-height:1.85; margin-bottom:14px; }
+  .desc-content ul { margin:12px 0 16px 24px; color:var(--gray-700); }
+  .desc-content li { margin-bottom:10px; line-height:1.75; }
+  .highlight-box {
+    background:var(--generix-orange-soft); border-left:4px solid var(--generix-orange);
+    padding:18px 20px; border-radius:6px; margin:22px 0; color:var(--gray-700); font-size:.95rem; line-height:1.7;
+  }
+  .highlight-box strong { color:var(--generix-dark); }
+  .highlight-box.hb-blue { background:var(--generix-blue-soft); border-left-color:var(--generix-blue); }
+  .highlight-box.hb-green { background:var(--generix-green-soft); border-left-color:var(--generix-green); }
+  .info-box {
+    background:#eff6ff; border-left:4px solid #3b82f6;
+    padding:18px 20px; border-radius:6px; margin:28px 0; color:var(--gray-700); font-size:.93rem; line-height:1.7;
+  }
+  .info-box strong { display:block; color:#1d4ed8; margin-bottom:6px; font-size:.95rem; }
+  .info-box code { background:var(--gray-100); padding:1px 5px; border-radius:3px; font-family:monospace; font-size:.85rem; }
+  .spec-card {
+    background:var(--gray-50); border:1px solid var(--gray-200); border-radius:10px;
+    padding:22px 26px; margin:24px 0; display:flex; flex-wrap:wrap; gap:20px 36px;
+  }
+  .spec-item { display:flex; flex-direction:column; gap:4px; }
+  .spec-label { font-size:.72rem; font-weight:700; color:var(--gray-500); text-transform:uppercase; letter-spacing:.5px; }
+  .spec-value { font-family:"SFMono-Regular",Consolas,monospace; font-size:.88rem; font-weight:600; color:var(--generix-dark); }
+
+  /* Estructura / Enumeraciones: 2-column layout with real sidebar */
+  .three-col {
+    padding:40px 32px;
+    display:grid; 
+    grid-template-columns: 0.3fr 1fr 0.3fr;
+    gap:36px; 
+    align-items:start;
+  }
+  .sidebar-nav {
+    position:sticky; top:155px;
+    max-height:calc(100vh - 170px); overflow-y:auto;
+    background:var(--gray-100); border-radius:6px;
+    border-left:4px solid var(--generix-orange);
+    padding:14px; box-shadow:0 2px 8px rgba(0,35,51,.1);
+    z-index:40;
+  }
+  .sidebar-nav::-webkit-scrollbar { width:4px; }
+  .sidebar-nav::-webkit-scrollbar-thumb { background:var(--gray-300); border-radius:2px; }
+  .sidebar-nav::-webkit-scrollbar-thumb:hover { background:var(--generix-orange); }
+  .snav-title { font-weight:600; font-size:.82rem; color:var(--generix-dark); margin-bottom:10px; text-transform:uppercase; letter-spacing:.5px; }
+  .snav-btns { display:flex; flex-direction:column; gap:5px; }
+  .snav-btn {
+    display:block; padding:8px 10px; background:var(--white); color:var(--generix-dark);
+    border:1px solid var(--gray-300); border-radius:4px; text-decoration:none;
+    font-size:.82rem; font-weight:500; transition:all .2s; cursor:pointer; text-align:left;
+    line-height:1.3; word-break:break-word;
+  }
+  .snav-btn:hover, .snav-btn.active { background:var(--generix-orange); color:#fff; border-color:var(--generix-orange); }
+
+  /* Block layout */
+  .col-middle { padding:0; }
+  .block-wrap { margin-bottom:56px; scroll-margin-top:160px; }
+  .block-grid { display:grid; grid-template-columns:1fr 1fr; gap:28px; align-items:start; }
+  .code-panel {
+    background:var(--gray-900); border-radius:8px; overflow:auto;
+    box-shadow:0 4px 16px rgba(0,35,51,.15); max-height:480px; min-height:200px;
+  }
+  .code-panel::-webkit-scrollbar { width:5px; height:4px; }
+  .code-panel::-webkit-scrollbar-track { background:transparent; }
+  .code-panel::-webkit-scrollbar-thumb { background:var(--gray-300); border-radius:3px; }
+  .code-panel::-webkit-scrollbar-thumb:hover { background:var(--generix-orange); }
+  .code-panel::-webkit-scrollbar-corner { background:transparent; }
+  .cp-header {
+    position:sticky; top:0; left:0; display:flex; align-items:center; gap:10px;
+    padding:10px 16px; background:var(--generix-dark); color:#fff; font-weight:600; font-size:.88rem;
+    z-index:2;
+  }
+  .cp-pre { margin:0; padding:20px; color:#e0e0e0; font-family:'Courier New',monospace; font-size:.82rem; line-height:1.65; }
+  .explanation-box {
+    background:var(--generix-orange-soft); border-left:4px solid var(--generix-orange);
+    padding:18px 20px; border-radius:6px; margin-bottom:16px;
+  }
+  .explanation-box p { color:var(--gray-700); font-size:.93rem; line-height:1.7; margin:0 0 8px; }
+  .explanation-box p:last-child { margin:0; }
+  .tech-details {
+    background:var(--gray-100); border-left:4px solid var(--gray-500);
+    padding:18px 20px; border-radius:6px; margin-bottom:16px;
+  }
+  .tech-details h4 { color:var(--gray-700); margin-bottom:12px; font-size:.92rem; }
+  .tech-details p  { color:var(--gray-700); margin:0 0 8px; font-size:.9rem; }
+  .tech-details p:last-child { margin:0; }
+  .tag-type { background:var(--generix-dark); color:var(--generix-orange); padding:2px 8px; border-radius:4px; font-family:'Courier New',monospace; font-size:.83rem; }
+  .tag-req  { background:var(--generix-orange); color:var(--generix-dark); padding:2px 7px; border-radius:3px; font-family:'Courier New',monospace; font-size:.82rem; font-weight:600; }
+  .tag-opt  { background:var(--gray-100); color:var(--generix-dark); padding:2px 7px; border-radius:3px; font-family:'Courier New',monospace; font-size:.82rem; }
+  .block-divider { border-bottom:1px solid var(--gray-200); margin-top:36px; margin-bottom:-20px; }
+
+  /* Field description table */
+  .field-tbl-wrap { margin-top:18px; overflow-x:auto; }
+  .field-tbl-title { font-weight:700; font-size:.85rem; color:var(--gray-700); margin-bottom:10px; }
+  .field-tbl { width:100%; border-collapse:collapse; background:var(--white); border:1px solid var(--gray-200); border-radius:6px; overflow:hidden; font-size:.85rem; }
+  .field-tbl thead { background:var(--generix-dark); color:#fff; }
+  .field-tbl th { padding:9px 12px; text-align:left; font-weight:600; font-size:.72rem; text-transform:uppercase; letter-spacing:.3px; }
+  .field-tbl td { padding:9px 12px; border-bottom:1px solid var(--gray-200); vertical-align:middle; color:var(--gray-700); line-height:1.5; }
+  .field-tbl tbody tr:last-child td { border-bottom:none; }
+  .field-tbl tbody tr:hover { background:var(--gray-50); }
+
+  /* Enum block extras */
+  .enum-val-wrap { margin-top:10px; }
+  .ev-pill {
+    display:inline-block; background:var(--generix-orange); color:var(--generix-dark);
+    padding:3px 9px; border-radius:4px; font-family:'Courier New',monospace;
+    font-size:.82rem; font-weight:600; margin:3px 4px 3px 0;
+  }
+  .ev-more { color:var(--gray-500); font-size:.8rem; font-style:italic; display:inline-block; margin-top:4px; }
+  .enum-desc-tbl { width:100%; border-collapse:collapse; background:var(--white); border:1px solid var(--gray-200); border-radius:6px; overflow:hidden; font-size:.85rem; margin-top:10px; }
+  .enum-desc-tbl thead { background:var(--generix-dark); color:#fff; }
+  .enum-desc-tbl th { padding:8px 12px; text-align:left; font-weight:600; font-size:.72rem; text-transform:uppercase; letter-spacing:.3px; }
+  .enum-desc-tbl td { padding:8px 12px; border-bottom:1px solid var(--gray-200); vertical-align:top; color:var(--gray-700); }
+  .enum-desc-tbl tbody tr:last-child td { border-bottom:none; }
+  .enum-desc-tbl tbody tr:hover { background:var(--gray-50); }
+
+  /* Ejemplo tab */
+  .ejemplo-wrap { max-width:1240px; margin:0 auto; padding:48px 32px; }
+  .ejemplo-wrap h2 { font-size:1.7rem; color:var(--generix-dark); margin-bottom:16px; padding-bottom:12px; border-bottom:2px solid var(--generix-orange-soft); }
+  .ejemplo-cp { background:var(--gray-900); border-radius:8px; overflow:hidden; box-shadow:0 4px 16px rgba(0,35,51,.12); }
+  .ejemplo-cp-header {
+    display:flex; justify-content:space-between; align-items:center;
+    padding:12px 18px; background:var(--generix-dark); color:#fff;
+  }
+  .ejemplo-cp-label { font-weight:600; font-size:.88rem; }
+  .copy-btn {
+    background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.2);
+    color:rgba(255,255,255,.8); padding:5px 14px; border-radius:5px;
+    font-size:.76rem; font-weight:600; cursor:pointer; transition:all .2s; font-family:inherit;
+  }
+  .copy-btn:hover { background:rgba(255,255,255,.2); color:#fff; }
+  .copy-btn.ok { color:#86efac; border-color:#86efac; }
+  .ejemplo-pre { margin:0; padding:24px; color:#e0e0e0; font-family:'Courier New',monospace; font-size:.82rem; line-height:1.7; overflow:auto; max-height:75vh; }
+  /* JSON highlight */
+  .jk{color:#93c5fd} .js{color:#86efac} .jn{color:#fcd34d} .jb{color:#f9a8d4} .jnull{color:#94a3b8}
+  .download-link { color:var(--generix-orange); text-decoration:none; font-weight:500; font-size:.95rem; }
+  .download-link:hover { text-decoration:underline; }
+
+  /* ── VERSIONES (file listing) ── */
+  .vers-section { max-width:1240px; margin:0 auto; padding:48px 32px; }
+  .vers-status { color:var(--gray-500); font-size:.9rem; margin-bottom:18px; }
+  .vers-quick { display:flex; flex-wrap:wrap; gap:8px; margin:0 0 28px; }
+  .vers-quick a { background:var(--gray-100); border:1px solid var(--gray-300); color:var(--generix-dark);
+    padding:6px 12px; border-radius:20px; text-decoration:none; font-size:.85rem; font-weight:500; }
+  .vers-quick a:hover { background:var(--generix-orange); color:#fff; border-color:var(--generix-orange); }
+  .folder-section { margin-bottom:40px; scroll-margin-top:120px; }
+  .folder-section h3 { display:flex; align-items:center; gap:10px; font-size:1.25rem; color:var(--generix-dark);
+    border-bottom:2px solid var(--generix-orange-soft); padding-bottom:10px; margin-bottom:16px; }
+  .file-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(320px, 1fr)); gap:16px; }
+  .file-card { background:#fff; border:1px solid var(--gray-200); border-radius:10px; padding:18px;
+    transition:all .25s; display:flex; flex-direction:column; gap:10px; }
+  .file-card:hover { border-color:var(--generix-orange); box-shadow:0 6px 18px rgba(0,35,51,.08); }
+  .file-card__head { display:flex; align-items:flex-start; gap:12px; }
+  .file-card__icon { font-size:1.6rem; line-height:1; }
+  .file-card__name { font-weight:700; color:var(--generix-dark); word-break:break-word; }
+  .file-card__meta { color:var(--gray-500); font-size:.8rem; margin-top:2px; }
+  .file-card__actions { display:flex; flex-wrap:wrap; gap:8px; margin-top:auto; }
+  .file-btn { font-size:.82rem; font-weight:600; text-decoration:none; cursor:pointer; padding:6px 12px;
+    border-radius:6px; border:1px solid var(--gray-300); color:var(--generix-dark); background:var(--gray-50); transition:all .2s; font-family:inherit; }
+  .file-btn:hover { background:var(--generix-orange); color:#fff; border-color:var(--generix-orange); }
+  .file-btn--primary { background:var(--generix-orange); color:#fff; border-color:var(--generix-orange); }
+  .file-btn--primary:hover { background:var(--generix-orange-hover); }
+  .file-preview { margin-top:6px; background:var(--gray-900); border-radius:8px; overflow:hidden; display:none; }
+  .file-preview.open { display:block; }
+  .file-preview pre { margin:0; padding:16px; color:#e0e0e0; font-family:'Courier New',monospace;
+    font-size:.78rem; line-height:1.55; overflow:auto; max-height:420px; }
+
+  /* ── EJEMPLO file-cards ── */
+  .ejemplo-grid { display:grid; grid-template-columns:repeat(3, 1fr); gap:16px; align-items:start; }
+  .ejemplo-grid .file-card.expanded { grid-column:1 / -1; }
+  @media (max-width:1100px) { .ejemplo-grid { grid-template-columns:repeat(2, 1fr); } }
+  @media (max-width:700px)  { .ejemplo-grid { grid-template-columns:1fr; } }
+
+  /* ── FOOTER ─────────────────────────────────────────── */
+  footer { background:var(--generix-dark); color:var(--white); padding:56px 32px 28px; position:relative; }
+  footer::before {
+    content:""; position:absolute; top:0; left:0; right:0; height:3px;
+    background:linear-gradient(90deg, var(--generix-orange) 0%, transparent 100%);
+  }
+  .footer-inner { max-width:1240px; margin:0 auto; }
+  .footer-top {
+    display:flex; justify-content:space-between; align-items:flex-start;
+    flex-wrap:wrap; gap:30px; margin-bottom:36px; padding-bottom:36px;
+    border-bottom:1px solid rgba(255,255,255,0.1);
+  }
+  .footer-logo img { height:36px; width:auto; margin-bottom:12px; display:block; }
+  .footer-tagline  { color:var(--generix-orange); font-size:0.8rem; font-weight:600; letter-spacing:2px; text-transform:uppercase; margin-bottom:8px; }
+  .footer-desc     { color:rgba(255,255,255,0.65); font-size:0.9rem; max-width:360px; }
+  .footer-bottom   { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; color:rgba(255,255,255,0.5); font-size:0.82rem; }
+  .accent { color:var(--generix-orange); }
+
+  /* ── RESPONSIVE ─────────────────────────────────────── */
+  @media (max-width:1100px) {
+    .hero-inner            { grid-template-columns:1fr; }
+    .hero-visual           { display:none; }
+    .three-col             { grid-template-columns:1fr; padding:24px 20px; }
+    .sidebar-nav           { position:static; max-height:none; }
+  }
+  @media (max-width:768px) {
+    .hero                  { padding:70px 24px; }
+    .hero h1               { font-size:2rem; }
+    .section               { padding:56px 20px; }
+    .nav a:not(.btn-contact){ display:none; }
+  }
+
+    /* ── VALIDADOR ── */
+  .val-section { max-width:1240px; margin:0 auto; padding:48px 32px; }
+  .val-controls { display:flex; flex-wrap:wrap; gap:16px; align-items:flex-end; margin-bottom:24px; }
+  .val-field { display:flex; flex-direction:column; gap:6px; }
+  .val-field label { font-size:.78rem; font-weight:700; color:var(--gray-500); text-transform:uppercase; letter-spacing:.5px; }
+  .val-select { padding:10px 14px; border:1px solid var(--gray-200); border-radius:8px; font-size:.92rem; color:var(--generix-dark); background:#fff; min-width:280px; font-family:inherit; cursor:pointer; }
+  .val-select:focus { outline:none; border-color:var(--generix-orange); }
+  #dropzone { border:2px dashed var(--gray-300); padding:42px 28px; border-radius:14px;
+    background:linear-gradient(180deg,#fcfcfd 0%,#f7f9fb 100%); text-align:center; cursor:pointer;
+    transition:all .25s ease; margin-bottom:24px; color:var(--gray-500); font-weight:500; }
+  #dropzone:hover { background:#f3f6f9; border-color:var(--generix-orange); transform:translateY(-1px); }
+  #dropzone.dragover { background:var(--generix-orange-soft); border-color:var(--generix-orange); }
+  #dropzone.disabled { opacity:.5; pointer-events:none; }
+  .val-layout { display:grid; gap:24px; margin-top:8px; }
+  .val-status-card { border-radius:14px; padding:18px 20px; margin:20px; border:1px solid transparent; box-shadow:0 6px 16px rgba(15,27,36,.05); }
+  .val-status-card.success { background:#ecfdf3; border-color:rgba(18,183,106,.25); }
+  .val-status-card.error   { background:#fef3f2; border-color:rgba(240,68,56,.22); }
+  .val-status-card.warning { background:#fffaeb; border-color:rgba(247,144,9,.22); }
+  .val-status-card.info    { background:#eff8ff; border-color:rgba(46,144,250,.22); }
+  .val-status-head { display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap; margin-bottom:8px; }
+  .val-status-title { font-weight:700; font-size:1rem; color:var(--generix-dark); }
+  .val-status-badge { display:inline-flex; align-items:center; gap:8px; padding:6px 10px; border-radius:999px;
+    font-size:.78rem; font-weight:700; letter-spacing:.02em; text-transform:uppercase; background:rgba(255,255,255,.75); color:var(--generix-dark); }
+  .val-status-text { color:var(--gray-700); font-size:.95rem; line-height:1.7; margin:0; }
+  .val-empty { display:none; }
+  .val-err-tbl { width:100%; border-collapse:collapse; background:#fff; border:1px solid var(--gray-200); border-radius:8px; overflow:hidden; font-size:.88rem; }
+  .val-err-tbl thead { background:var(--generix-dark); color:#fff; }
+  .val-err-tbl th { padding:9px 12px; text-align:left; font-size:.72rem; text-transform:uppercase; letter-spacing:.3px; }
+  .val-err-tbl td { padding:9px 12px; border-bottom:1px solid var(--gray-200); color:var(--gray-700); vertical-align:top; }
+  .val-err-tbl tbody tr:last-child td { border-bottom:none; }
+  .val-err-tbl code { background:var(--gray-100); padding:1px 6px; border-radius:4px; font-size:.82rem; }
+  /* ── VISOR JSON + MINIMAPA (IDE) ── */
+  .validator-code-shell { margin-top:0; }
+  .validator-code-panel { background:var(--gray-900); border-radius:12px; overflow:hidden; box-shadow:0 10px 30px rgba(0,35,51,.16); border:1px solid rgba(255,255,255,.04); }
+  .validator-code-header { padding:14px 20px; background:var(--generix-dark); color:#fff; font-weight:700; display:flex; align-items:center; justify-content:space-between; gap:12px; border-bottom:1px solid rgba(255,255,255,.06); }
+  .validator-code-header small { color:rgba(255,255,255,.72); font-weight:500; font-size:.82rem; }
+  .validator-code-body { display:grid; grid-template-columns:minmax(0,1fr) 132px; max-height:620px; overflow:hidden; }
+  .validator-code-scroll { max-height:620px; overflow:auto; min-width:0; scrollbar-width:none; -ms-overflow-style:none; }
+  .validator-code-scroll::-webkit-scrollbar { display:none; }
+  .validator-code-content { min-width:max-content; }
+  .validator-line { display:grid; grid-template-columns:60px 1fr; align-items:center; min-height:24px; }
+  .validator-line:hover { background:rgba(255,255,255,.02); }
+  .validator-line-number { display:flex; align-items:center; justify-content:flex-end; width:60px; min-width:60px; min-height:24px; padding:0 .6rem 0 .5rem; color:#8ca0af; border-right:1px solid rgba(255,255,255,.07); font-family:'Courier New',monospace; font-size:.84rem; line-height:1; user-select:none; background:rgba(255,255,255,.02); }
+  .validator-line-code { display:block; min-width:max-content; min-height:24px; padding:0 .6rem; color:#e6edf3; white-space:pre; font-size:.84rem; line-height:24px; font-family:'Courier New',monospace; }
+  .validator-json-key { color:#93c5fd; }
+  .validator-json-string { color:#86efac; }
+  .validator-json-number, .validator-json-boolean, .validator-json-null { color:#fcd34d; }
+  .validator-json-punctuation { color:#d4d4d4; }
+  .validator-line.is-error .validator-line-number, .validator-line.is-error .validator-line-code { background:rgba(240,68,56,.12); }
+  .validator-line.is-error .validator-line-code { border-left:3px solid #f04438; padding-left:calc(.6rem - 3px); }
+  .validator-line.is-focused { animation:validatorLinePulse 1.3s ease-out 1; }
+  .validator-line.is-focused .validator-line-code { box-shadow:inset 0 0 0 1px rgba(242,138,72,.85); background:rgba(242,138,72,.16); }
+  @keyframes validatorLinePulse { 0%{background:rgba(242,138,72,.34)} 100%{background:transparent} }
+  .validator-code-minimap { position:relative; min-height:100%; background:#2b3036; border-left:1px solid rgba(255,255,255,.1); box-shadow:inset 8px 0 14px rgba(0,0,0,.18); cursor:pointer; user-select:none; overflow:hidden; }
+  .validator-code-minimap-content { position:absolute; left:0; right:0; top:0; will-change:transform; pointer-events:none; }
+  .validator-code-minimap::before { content:""; position:absolute; inset:0; background:linear-gradient(90deg,rgba(255,255,255,.035),rgba(255,255,255,.075)); pointer-events:none; }
+  .validator-minimap-code-line { position:absolute; left:8px; right:8px; height:3px; display:flex; align-items:center; gap:2px; opacity:.82; }
+  .validator-minimap-code-line.is-error { opacity:1; background:rgba(240,68,56,.13); box-shadow:0 0 0 1px rgba(240,68,56,.16); }
+  .validator-minimap-token { display:inline-block; height:2px; min-width:3px; border-radius:999px; background:rgba(160,174,187,.65); }
+  .validator-minimap-token--key { background:rgba(147,197,253,.95); }
+  .validator-minimap-token--string { background:rgba(134,239,172,.9); }
+  .validator-minimap-token--number, .validator-minimap-token--boolean, .validator-minimap-token--null { background:rgba(252,211,77,.9); }
+  .validator-minimap-token--punctuation { background:rgba(212,212,212,.55); }
+  .validator-minimap-token--error { background:#f04438; box-shadow:0 0 6px rgba(240,68,56,.75); }
+  .validator-minimap-viewport { position:absolute; left:0; right:0; top:0; min-height:28px; border-top:1px solid rgba(255,255,255,.8); border-bottom:1px solid rgba(255,255,255,.8); background:rgba(255,255,255,.26); box-shadow:inset 0 0 0 1px rgba(255,255,255,.18),0 0 18px rgba(255,255,255,.1); cursor:grab; pointer-events:auto; z-index:2; }
+  .validator-minimap-viewport:hover { background:rgba(255,255,255,.38); border-top:1px solid #fff; border-bottom:1px solid #fff; }
+  /* ── BOTÓN VOLVER ARRIBA ── */
+  .go-top {
+    position: fixed; right: 28px; bottom: 28px; z-index: 200;
+    width: 48px; height: 48px; border-radius: 50%;
+    background: var(--generix-orange); color: var(--generix-dark);
+    border: none; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.3rem; font-weight: 700;
+    box-shadow: 0 6px 18px rgba(0,35,51,0.22);
+    opacity: 0; visibility: hidden; transform: translateY(12px);
+    transition: opacity .25s, transform .25s, background .2s, visibility .25s;
+  }
+  .go-top.show { opacity: 1; visibility: visible; transform: translateY(0); }
+  .go-top:hover { background: var(--generix-orange-hover); transform: translateY(-3px); }
+  @media (max-width: 768px) { .go-top { right: 16px; bottom: 16px; width: 44px; height: 44px; } }
+
+  /* ── VISTA RESPUESTAS ── */
+  .resp-section { max-width:1240px; margin:0 auto; padding:48px 32px; }
+  .resp-block { margin-bottom:64px; }
+  .resp-block-head { border-left:4px solid var(--generix-orange); padding-left:16px; margin-bottom:20px; }
+  .resp-block-head h2 { font-size:1.6rem; color:var(--generix-dark); margin-bottom:6px; }
+  .resp-block-head p { color:var(--gray-700); font-size:.98rem; line-height:1.7; max-width:780px; }
+  .resp-transport { display:inline-block; margin-top:10px; background:var(--gray-100); color:var(--gray-700); padding:4px 12px; border-radius:20px; font-size:.78rem; font-weight:600; }
+  .resp-sub { font-size:1.05rem; font-weight:700; color:var(--generix-dark); margin:28px 0 12px; padding-bottom:8px; border-bottom:2px solid var(--generix-orange-soft); }
+  .resp-blocklabel { font-family:'Courier New',monospace; font-weight:700; color:var(--generix-dark); margin-bottom:8px; }
+  .rf-arrow { color:var(--gray-300); margin-right:4px; }
+  .rf-name-wrap { display:inline-flex; align-items:center; }
+  .status-tbl { width:100%; border-collapse:collapse; background:#fff; border:1px solid var(--gray-200); border-radius:8px; overflow:hidden; font-size:.9rem; }
+  .status-tbl thead { background:var(--generix-dark); color:#fff; }
+  .status-tbl th { padding:9px 12px; text-align:left; font-size:.72rem; text-transform:uppercase; letter-spacing:.3px; }
+  .status-tbl td { padding:10px 12px; border-bottom:1px solid var(--gray-200); color:var(--gray-700); vertical-align:top; }
+  .status-tbl tbody tr:last-child td { border-bottom:none; }
+  .status-code { font-family:'Courier New',monospace; font-weight:700; padding:2px 9px; border-radius:4px; }
+  .status-2xx { background:#dcfce7; color:#15803d; }
+  .status-4xx { background:#fef3c7; color:#92400e; }
+  .status-5xx { background:#fee2e2; color:#dc2626; }
+  .resp-block-top { display:grid; grid-template-columns:1fr minmax(340px, 440px); gap:28px; align-items:start; margin-bottom:20px; }
+  .resp-block-top .resp-block-head { margin-bottom:0; }
+  /* Al pulsar "Ver contenido", la tarjeta salta de línea y ocupa todo el ancho */
+  .resp-block-top.has-expanded { grid-template-columns:1fr; }
+  .resp-block-top .file-card.expanded { grid-column:1 / -1; }
+  @media (max-width:860px){ .resp-block-top { grid-template-columns:1fr; } }
+
+  /* ── SELECTOR DE IDIOMA (desplegable personalizado con banderas) ── */
+  .lang-switch { position:relative; display:inline-block; font-family:inherit; }
+  .lang-current {
+    display:flex; align-items:center; gap:8px;
+    background:var(--generix-dark-soft); color:var(--white);
+    border:1px solid rgba(255,255,255,.18); border-radius:6px; padding:7px 12px;
+    font-size:.85rem; font-weight:600; font-family:inherit; cursor:pointer;
+    transition:border-color .2s;
+  }
+  .lang-current:hover { border-color:var(--generix-orange); }
+  .lang-current:focus-visible { outline:none; border-color:var(--generix-orange); }
+  .lang-current::after {
+    content:""; width:0; height:0; margin-left:2px;
+    border-left:4px solid transparent; border-right:4px solid transparent;
+    border-top:5px solid rgba(255,255,255,.7); transition:transform .2s;
+  }
+  .lang-switch.open .lang-current::after { transform:rotate(180deg); }
+  .lang-flag {
+    width:20px; height:14px; border-radius:2px; flex-shrink:0; overflow:hidden;
+    display:block; box-shadow:0 0 0 1px rgba(255,255,255,.15);
+  }
+  .lang-flag svg, .lang-flag img { display:block; width:100%; height:100%; }
+  .lang-menu {
+    position:absolute; top:calc(100% + 6px); right:0; z-index:120;
+    min-width:100%; margin:0; padding:5px; list-style:none;
+    background:var(--generix-dark); border:1px solid rgba(255,255,255,.14);
+    border-radius:8px; box-shadow:0 10px 28px rgba(0,35,51,.35);
+    opacity:0; visibility:hidden; transform:translateY(-6px);
+    transition:opacity .18s, transform .18s, visibility .18s;
+  }
+  .lang-switch.open .lang-menu { opacity:1; visibility:visible; transform:translateY(0); }
+  .lang-option {
+    display:flex; align-items:center; gap:9px; white-space:nowrap;
+    padding:8px 12px; border-radius:5px; cursor:pointer;
+    color:rgba(255,255,255,.85); font-size:.85rem; font-weight:600;
+    transition:background .15s, color .15s;
+  }
+  .lang-option:hover { background:var(--generix-dark-soft); color:#fff; }
+  .lang-option.active { background:var(--generix-orange); color:var(--generix-dark); }
+
+  .endpoint-nav{ display:flex; flex-wrap:wrap; gap:8px; margin:20px 0 35px;}
+  .endpoint-nav-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 8px; margin:20px 0 35px; padding-bottom: 15px;}
+  .endpoint-link{ 
+    border:1px solid var(--gray-200); padding:8px 14px; border-radius:20px; cursor:pointer; 
+    transition:.2s; background-color: var(--generix-dark); color: var(--white);
+    position: relative; overflow: hidden; text-transform: uppercase;
+  }
+  .endpoint-link:hover{ border-color:var(--generix-green); color:var(--generix-green);}
+  .endpoint-link.active{font-weight: 700; border-color: var(--generix-dark);color: var(--generix-dark); background-color: var(--generix-green);box-shadow: 0 0 10px rgba(242,138,72,.25);}
+  .nav-new-badge {
+    position: absolute; right: 8px; top: calc(50% - 1px); transform: translateY(-50%); color: var(--generix-green); font-size: 20px;
+    display: flex; align-items: center; justify-content: center; width: 16px; height: 16px; line-height: 1; z-index: 2;
+    --pulse-color0:rgba(0,165,154,.55);
+    --pulse-color70:rgba(0,165,154,0);
+    --pulse-color100:rgba(0,165,154,0);
+  }
+  .endpoint-link.active .nav-new-badge {
+    position: absolute; right: 8px; top: calc(50% - 1px); transform: translateY(-50%); color: var(--generix-dark); font-size: 20px;
+    display: flex; align-items: center; justify-content: center; width: 16px; height: 16px; line-height: 1; z-index: 2;
+    --pulse-color0: rgba(0,35,51,.55);
+    --pulse-color70:rgb(0, 35, 51, 0);
+    --pulse-color100:rgb(0, 35, 51, 0);
+  }
+  .nav-new-badge::after {
+    content: ""; position: absolute; left: 50%; top: 50%;
+    width: 4px; height: 4px; border-radius: 50%;
+    transform: translate(-50%, -50%); animation: pulseStar 1.8s ease-out infinite;
+  }
+  @keyframes pulseStar {
+      0% { box-shadow:   0 0 0 0    var(--pulse-color0)   }
+      70% { box-shadow:  0 0 0 14px var(--pulse-color70)  }
+      100% { box-shadow: 0 0 0 0    var(--pulse-color100) }
+  }
+
+  /* ── VERSIONES POR ENDPOINT ───────────────────────────── */
+  .file-grid .file-card.expanded { grid-column: 1 / -1; width: 100%; }
+  .endpoint-version-head { margin-bottom: 24px; }
+  .endpoint-version-head h2 { font-size:1.7rem; color:var(--generix-dark); margin-bottom:16px; padding-bottom:12px; border-bottom:2px solid var(--generix-orange-soft); }
+  .endpoint-version-current { background:var(--generix-green-soft); border-left:4px solid var(--generix-green); padding:18px 20px; border-radius:8px; margin:0 0 22px; color:var(--gray-700); }
+  .endpoint-version-current strong { color:var(--generix-dark); display:block; margin-bottom:6px; }
+  .endpoint-version-pill { display:inline-flex; align-items:center; gap:6px; background:var(--generix-green); color:#fff; padding:4px 10px; border-radius:999px; font-size:.78rem; font-weight:800; letter-spacing:.3px; }
+  .endpoint-version-file { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+  .endpoint-version-file .badge-current { background:var(--generix-green); color:#fff; padding:2px 8px; border-radius:999px; font-size:.68rem; font-weight:800; text-transform:uppercase; }
+  .version-compare-box { display:none; margin-top:12px; border:1px solid var(--gray-200); border-radius:10px; overflow:hidden; background:#fff; }
+  .version-compare-box.open { display:block; }
+  .version-compare-head { background:var(--generix-dark); color:#fff; padding:10px 14px; font-weight:700; font-size:.86rem; display:flex; align-items:center; justify-content:space-between; gap:12px; }
+  .version-compare-body { padding:14px; }
+  .version-diff-summary { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:14px; }
+  .version-diff-chip { padding:4px 10px; border-radius:999px; font-size:.78rem; font-weight:700; }
+  .version-diff-chip.added { background:#dcfce7; color:#15803d; }
+  .version-diff-chip.removed { background:#fee2e2; color:#dc2626; }
+  .version-diff-chip.changed { background:#fef3c7; color:#92400e; }
+  .version-diff-list { display:grid; gap:8px; }
+  .version-diff-row { border-radius:8px; padding:9px 12px; font-family:'Courier New',monospace; font-size:.82rem; line-height:1.5; word-break:break-word; }
+  .version-diff-row.added { background:#ecfdf3; border-left:4px solid #16a34a; color:#166534; }
+  .version-diff-row.removed { background:#fef2f2; border-left:4px solid #dc2626; color:#991b1b; }
+  .version-diff-row.changed { background:#fffbeb; border-left:4px solid #f59e0b; color:#92400e; }
+  .version-diff-muted { color:var(--gray-500); font-size:.9rem; }
+
+  .sticky-header { position: sticky; top: 87px; z-index: 99; background: var(--white); padding-top: 10px; }
+
+
+</style>
+</head>
+<body>
+
+<!-- ═══ TOPBAR ══════════════════════════════════════════ -->
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="logo" onclick="showIndex()" aria-label="Generix">
+      <img src="Assets/generix.svg" alt="Generix">
+    </a>
+    <div class="lang-switch" id="langSwitch" aria-label="Idioma / Language">
+      <button type="button" class="lang-current" id="langCurrent" aria-haspopup="listbox" aria-expanded="false"></button>
+      <ul class="lang-menu" id="langMenu" role="listbox"></ul>
+    </div>
+  </div>
+</header>
+
+<!-- ═══ INDEX VIEW ══════════════════════════════════════ -->
+<div id="view-index">
+
+  <section class="hero">
+    <div class="hero-inner">
+      <div class="hero-content">
+        <div class="hero-tagline" data-i18n="hero.tagline">Portal de Documentaci&oacute;n para Desarrolladores</div>
+        <h1>WMS API<br><span class="accent">Generix Spain</span></h1>
+        <p class="hero-subtitle" data-i18n="hero.subtitle">
+          Especificaciones t&eacute;cnicas, esquemas de mensajes y gu&iacute;as de integraci&oacute;n para la API del sistema de gesti&oacute;n de almacenes (WMS) de Generix Spain.
+        </p>
+        <div class="cta-row">
+          <button class="btn btn-primary" data-i18n="hero.cta.explore" onclick="document.getElementById('ep-section').scrollIntoView({behavior:'smooth'})">
+            Explorar endpoints
+          </button>
+          <button class="btn btn-secondary" data-i18n="hero.cta.resources" onclick="document.getElementById('recursos-section').scrollIntoView({behavior:'smooth'})">
+            Recursos
+          </button>
+        </div>
+      </div>
+      <div class="hero-visual">
+        <img src="Assets/hero-ico.svg" alt="" width="230" height="230">
+      </div>
+    </div>
+  </section>
+
+  <div class="stats">
+    <div class="stats-inner">
+      <div><div class="stat-number" id="stat-count">—</div><div class="stat-label" data-i18n="stats.endpoints">Endpoints documentados</div></div>
+      <div><div class="stat-number">ASYNC</div><div class="stat-label" data-i18n="stats.comm">Comunicaci&oacute;n</div></div>
+      <div><div class="stat-number">REST</div><div class="stat-label" data-i18n="stats.protocol">Protocolo</div></div>
+      <div><div class="stat-number">JSON</div><div class="stat-label" data-i18n="stats.format">Formato de integraci&oacute;n</div></div>
+      <div><div class="stat-number">WMS</div><div class="stat-label" data-i18n="stats.generix">Generix Spain</div></div>
+    </div>
+  </div>
+
+  <section class="section" id="ep-section">
+    <div class="sticky-header">
+      <div class="section-header">
+        <span class="section-eyebrow" data-i18n="sec.eyebrow">Centro de documentaci&oacute;n · WMS API</span>
+        <h2 data-i18n="sec.title">Endpoints y mensajes de integraci&oacute;n</h2>
+        <p data-i18n="sec.subtitle">Selecciona un mensaje para explorar su esquema completo: campos, tipos, validaciones y ejemplos de payload.</p>
+      </div>
+      <div id="endpoint-nav"></div>
+    </div>
+    <div class="grid folder-section" id="endpoints-grid">
+      <!-- filled by JS -->
+    </div>
+  </section>
+
+  <section class="section" style="padding-top:0; scroll-margin-top: 130px;" id="recursos-section">
+    <div class="folder-section" id="recursos-section">
+      <h3><span class="card-icon" style="margin-bottom: 0px; font-size: 1.2rem;">⚙</span> RECURSOS</h3>
+        <div class="file-grid">
+          <div class="card" onclick="showVersions()">
+            <div class="card-icon">↺</div>
+            <div class="card-meta"><span class="badge badge-cat" data-i18n="res.history.badge">Historial</span></div>
+            <h3 data-i18n="res.history.title">Versiones de esquemas</h3>
+            <p data-i18n="res.history.desc">Consulta y descarga las distintas versiones publicadas de los esquemas JSON.</p>
+            <span class="card-link" data-i18n="res.history.link">Ver versiones</span>
+          </div>
+          <div class="card" id="resp-card" style="display:none" onclick="showRespuestas()">
+            <div class="card-icon">↩</div>
+            <div class="card-meta"><span class="badge badge-cat" data-i18n="res.resp.badge">Schema</span></div>
+            <h3 data-i18n="res.resp.title">Respuestas</h3>
+            <p data-i18n="res.resp.desc">Estructura JSON de las respuestas del WMS: campos, validaciones y ejemplo.</p>
+            <span class="card-link" data-i18n="res.resp.link">Ver respuestas</span>
+          </div>
+          <div class="card" onclick="showValidacion()">
+            <div class="card-icon">✓</div>
+            <div class="card-meta"><span class="badge badge-cat" data-i18n="res.val.badge">Herramienta</span></div>
+            <h3 data-i18n="res.val.title">Validaciones</h3>
+            <p data-i18n="res.val.desc">Valida tu fichero JSON contra el esquema de cualquier mensaje del WMS.</p>
+            <span class="card-link" data-i18n="res.val.link">Abrir validador</span>
+          </div>
+        </div>
+      </div>
+  </section>
+
+</div><!-- /#view-index -->
+
+<!-- ═══ DETAIL VIEW ═════════════════════════════════════ -->
+<div id="view-detail">
+
+  <!-- Page header -->
+  <section class="dh">
+    <div class="dhi">
+      <div class="d-breadcrumb">
+        <a href="#" onclick="showIndex();return false;" data-i18n="crumb.docs">Documentaci&oacute;n</a>
+        <span>/</span>
+        <span class="cur" id="d-breadcrumb-name">—</span>
+      </div>
+      <div class="ep-badges" id="ep-badges"></div>
+      <h1 id="d-title">Cargando...</h1>
+      <p class="ddesc" id="d-desc"></p>
+    </div>
+  </section>
+
+  <!-- Tab navigation -->
+  <div class="tab-nav-outer">
+    <div class="tab-nav-inner">
+      <div class="tab-nav">
+        <button class="tab-btn active" data-tab="descripcion" data-i18n="tabs.desc">Descripci&oacute;n General</button>
+        <button class="tab-btn" data-tab="estructura" data-i18n="tabs.struct">Estructura</button>
+        <button class="tab-btn" data-tab="enumeraciones" data-i18n="tabs.enums">Enumeraciones</button>
+        <button class="tab-btn" data-tab="ejemplo" data-i18n="tabs.example">Ejemplo</button>
+        <button class="tab-btn" data-tab="versiones" data-i18n="tabs.versions">Versiones</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tab: Descripción -->
+  <div id="tab-descripcion" class="tab-panel active">
+    <div class="desc-content">
+      <div id="desc-body"><p style="color:var(--gray-500)">Cargando…</p></div>
+    </div>
+  </div>
+
+  <!-- Tab: Estructura -->
+  <div id="tab-estructura" class="tab-panel">
+    <div class="three-col">
+      <div class="sidebar-nav" id="snav-estructura">
+        <div class="snav-title" data-i18n="sidebar.goto">Ir a</div>
+        <div class="snav-btns" id="snav-btns-estructura"></div>
+      </div>
+      <div id="estructura-body"><p style="color:var(--gray-500)">Cargando…</p></div>
+    </div>
+  </div>
+
+  <!-- Tab: Enumeraciones -->
+  <div id="tab-enumeraciones" class="tab-panel">
+    <div class="three-col">
+      <div class="sidebar-nav" id="snav-enumeraciones">
+        <div class="snav-title" data-i18n="sidebar.goto">Ir a</div>
+        <div class="snav-btns" id="snav-btns-enumeraciones"></div>
+      </div>
+      <div id="enumeraciones-body"><p style="color:var(--gray-500)">Cargando…</p></div>
+    </div>
+  </div>
+
+  <!-- Tab: Ejemplo -->
+  <div id="tab-ejemplo" class="tab-panel">
+    <div class="ejemplo-wrap">
+      <h2 data-i18n="example.title">Ejemplos</h2>
+      <div class="highlight-box" style="margin-bottom:24px" data-i18n-html="example.notice">
+        <strong>⚠️ Aviso:</strong> Los datos utilizados en estos ejemplos no tienen relaci&oacute;n con datos reales. Confirma con tu consultor WMS que los valores sean correctos.
+      </div>
+      <div id="ejemplo-inner"><p style="color:var(--gray-500)">Cargando…</p></div>
+    </div>
+  </div>
+
+  <!-- Tab: Versiones -->
+  <div id="tab-versiones" class="tab-panel">
+    <div class="vers-section">
+      <div class="endpoint-version-head">
+        <h2 data-i18n="endpointVersions.title">Versiones disponibles</h2>
+        <div id="endpointVersionsStatus" class="vers-status">Cargando…</div>
+      </div>
+      <div id="endpointVersionsContainer"></div>
+    </div>
+  </div>
+
+</div><!-- /#view-detail -->
+
+<!-- ═══ VERSIONS VIEW ═══ -->
+<div id="view-versions" style="display:none">
+  <section class="dh">
+    <div class="dhi">
+      <div class="d-breadcrumb">
+        <a href="#" onclick="showIndex();return false;" data-i18n="crumb.docs">Documentaci&oacute;n</a>
+        <span>/</span><span class="cur" data-i18n="crumb.versions">Versiones de esquemas</span>
+      </div>
+      <h1 data-i18n="versions.h1">Versiones de esquemas</h1>
+      <p class="ddesc" data-i18n="versions.desc">Listado en vivo desde el repositorio. Cualquier carpeta o fichero que se añada aparece aqu&iacute; autom&aacute;ticamente.</p>
+    </div>
+  </section>
+  <div class="vers-section">
+    <div id="versStatus" class="vers-status">Cargando…</div>
+    <div id="versQuick" class="vers-quick"></div>
+    <div id="versContainer"></div>
+  </div>
+</div>
+
+<!-- ═══ VALIDACION VIEW ═══ -->
+<div id="view-validacion" style="display:none">
+  <section class="dh">
+    <div class="dhi">
+      <div class="d-breadcrumb">
+        <a href="#" onclick="showIndex();return false;" data-i18n="crumb.docs">Documentaci&oacute;n</a>
+        <span>/</span><span class="cur" data-i18n="crumb.validation">Validaciones</span>
+      </div>
+      <h1 data-i18n="val.h1">Validador de mensajes</h1>
+      <p class="ddesc" data-i18n="val.desc">Selecciona el tipo de mensaje, sube tu fichero JSON y val&iacute;dalo contra el esquema oficial del WMS.</p>
+    </div>
+  </section>
+  <div class="val-section">
+    <div class="val-controls">
+      <div class="val-field">
+        <label for="valSchema" data-i18n="val.label">Mensaje a validar</label>
+        <select id="valSchema" class="val-select"><option value="">Cargando…</option></select>
+      </div>
+    </div>
+    <div id="dropzone" class="disabled">
+      Selecciona primero un mensaje, luego arrastra tu JSON o haz click
+      <input type="file" id="fileInput" accept=".json,application/json" hidden />
+    </div>
+    <div class="val-layout">
+      <div id="validationSummary" class="val-empty"></div>
+      <div id="jsonViewerContainer"></div>
+    </div>
+    <div style="display:none">
+      <div id="result"></div><div id="errorList"></div><div id="jsonViewer"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ RESPUESTAS VIEW ═══ -->
+<div id="view-respuestas" style="display:none">
+  <section class="dh">
+    <div class="dhi">
+      <div class="d-breadcrumb">
+        <a href="#" onclick="showIndex();return false;" data-i18n="crumb.docs">Documentaci&oacute;n</a>
+        <span>/</span><span class="cur" data-i18n="crumb.responses">Respuestas</span>
+      </div>
+      <h1 data-i18n="resp.h1">Respuestas de la API</h1>
+      <p class="ddesc" data-i18n="resp.desc">La API es as&iacute;ncrona: devuelve una respuesta inmediata (HTTP) y, si detecta errores de validaci&oacute;n, env&iacute;a un callback al endpoint que el cliente expone.</p>
+    </div>
+  </section>
+  <div id="respuestas-nav"></div>
+  <div class="resp-section">
+    <div id="respuestas-body"><p style="color:var(--gray-500)">Cargando…</p></div>
+  </div>
+</div>
+
+<!-- ═══ FOOTER ══════════════════════════════════════════ -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div>
+        <div class="footer-logo"><img src="Assets/generix.svg" alt="Generix"></div>
+        <div class="footer-tagline">Connecting Businesses Together</div>
+        <p class="footer-desc" data-i18n="footer.desc">Documentaci&oacute;n t&eacute;cnica de la API WMS · Generix Spain · Especificaciones de mensajes e integraci&oacute;n.</p>
+      </div>
+      <div>
+        <p style="color:rgba(255,255,255,0.65);font-size:0.88rem;line-height:1.9">
+          <strong style="color:#fff">WMS API</strong> · Warehouse Management System<br>
+          REST · JSON · Inbound · Outbound · Inventory<br>
+          Generix Spain
+        </p>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© <span class="accent">Generix</span> · Developer Documentation Portal · WMS API Spain</p>
+      <p data-i18n="footer.bottom2">Especificaciones t&eacute;cnicas e integraci&oacute;n WMS</p>
+    </div>
+  </div>
+</footer>
+
+<!-- Botón volver arriba -->
+<button id="goTop" class="go-top" data-i18n-attr="aria-label:aria.top;title:aria.top" aria-label="Volver arriba" title="Volver arriba"
+  onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+<script>
+  (function(){
+    const btn = document.getElementById('goTop');
+    function toggle(){ btn.classList.toggle('show', window.scrollY > 400); }
+    window.addEventListener('scroll', toggle, { passive: true });
+    toggle();
+  })();
+</script>
+
+<!-- Idiomas -->
+<script>
+/* ══ NUCLEO i18n — idiomas ES/EN, deteccion por navegador ══ */
+const I18N_LANGS   = ['es','en'];      // anade aqui nuevos idiomas
+const I18N_DEFAULT = 'es';
+const I18N_LABELS  = { es:'Español', en:'English' };
+const I18N_FLAGS   = {                 // bandera por idioma (SVG en linea) — anade aqui la de nuevos idiomas
+  es: 'Assets/flag-es.svg',
+  en: 'Assets/flag-en.svg'
+  // es: '<svg viewBox="0 0 3 2" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none"><rect width="3" height="2" fill="#c60b1e"/><rect y=".5" width="3" height="1" fill="#ffc400"/></svg>',
+  // en: '<svg viewBox="0 0 60 30" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none"><clipPath id="ukc"><path d="M0,0 v30 h60 v-30 z"/></clipPath><clipPath id="ukt"><path d="M30,15 h30 v15 z v15 h-30 z h-30 v-15 z v-15 h30 z"/></clipPath><g clip-path="url(#ukc)"><path d="M0,0 v30 h60 v-30 z" fill="#012169"/><path d="M0,0 L60,30 M60,0 L0,30" stroke="#fff" stroke-width="6"/><path d="M0,0 L60,30 M60,0 L0,30" clip-path="url(#ukt)" stroke="#C8102E" stroke-width="4"/><path d="M30,0 v30 M0,15 h60" stroke="#fff" stroke-width="10"/><path d="M30,0 v30 M0,15 h60" stroke="#C8102E" stroke-width="6"/></g></svg>'
+};
+const I18N = {
+ es: {
+  'hero.tagline':'Portal de Documentación para Desarrolladores',
+  'hero.subtitle':'Especificaciones técnicas, esquemas de mensajes y guías de integración para la API del sistema de gestión de almacenes (WMS) de Generix Spain.',
+  'hero.cta.explore':'Explorar endpoints','hero.cta.resources':'Recursos',
+  'stats.endpoints':'Endpoints documentados','stats.comm':'Comunicación','stats.protocol':'Protocolo','stats.format':'Formato de integración','stats.generix':'Generix Spain',
+  'sec.eyebrow':'Centro de documentación · WMS API','sec.title':'Endpoints y mensajes de integración',
+  'sec.subtitle':'Selecciona un mensaje para explorar su esquema completo: campos, tipos, validaciones y ejemplos de payload.',
+  'res.history.badge':'Historial','res.history.title':'Versiones de esquemas','res.history.desc':'Consulta y descarga las distintas versiones publicadas de los esquemas JSON.','res.history.link':'Ver versiones',
+  'res.resp.badge':'Schema','res.resp.title':'Respuestas','res.resp.desc':'Estructura JSON de las respuestas del WMS: campos, validaciones y ejemplo.','res.resp.link':'Ver respuestas',
+  'res.val.badge':'Herramienta','res.val.title':'Validaciones','res.val.desc':'Valida tu fichero JSON contra el esquema de cualquier mensaje del WMS.','res.val.link':'Abrir validador',
+  'crumb.docs':'Documentación','crumb.versions':'Versiones de esquemas','crumb.validation':'Validaciones','crumb.responses':'Respuestas',
+  'tabs.desc':'Descripción General','tabs.struct':'Estructura','tabs.enums':'Enumeraciones','tabs.example':'Ejemplo','tabs.versions':'Versiones',
+  'sidebar.goto':'Ir a','example.title':'Ejemplos','endpointVersions.title':'Versiones disponibles','endpointVersions.none':'No existen versiones para este endpoint.','endpointVersions.current':'Última versión publicada','endpointVersions.compare':'Comparar con anterior','endpointVersions.compareTitle':'Comparativa de versiones','endpointVersions.noChanges':'No se han detectado cambios relevantes entre estas dos versiones.','endpointVersions.added':'Añadidos','endpointVersions.removed':'Eliminados','endpointVersions.changed':'Modificados',
+  'example.notice':'<strong>⚠️ Aviso:</strong> Los datos utilizados en estos ejemplos no tienen relación con datos reales. Confirma con tu consultor WMS que los valores sean correctos.',
+  'versions.h1':'Versiones de esquemas','versions.desc':'Listado en vivo desde el repositorio. Cualquier carpeta o fichero que se añada aparece aquí automaticamente.',
+  'val.h1':'Validador de mensajes','val.desc':'Selecciona el tipo de mensaje, sube tu fichero JSON y valídalo contra el esquema oficial del WMS.','val.label':'Mensaje a validar',
+  'val.dropzone.disabled':'Selecciona primero un mensaje, luego arrastra tu JSON o haz click','val.dropzone.enabled':'Arrastra tu JSON o haz click',
+  'resp.h1':'Respuestas de la API','resp.desc':'La API es asíncrona: devuelve una respuesta inmediata (HTTP) y, si detecta errores de validación, envía un callback al endpoint que el cliente expone.',
+  'footer.desc':'Documentación técnica de la API WMS · Generix Spain · Especificaciones de mensajes e integración.','footer.bottom2':'Especificaciones técnicas e integración WMS',
+  'aria.top':'Volver arriba',
+  'loading':'Cargando…','empty.none':'No hay endpoints publicados todavía.',
+  'err.repo.title':'No se pudo conectar con el repositorio','err.repo.body':'Revisa los valores de CONFIG (owner, repo, branch).',
+  'empty.title':'Sin endpoints publicados','empty.hint':'Crea una carpeta en <code>{path}/</code> con un <code>schema.json</code>.',
+  'card.comingSoon':'Próximamente','card.fields_sg':'campo','card.fields_pl':'campos','card.viewDoc':'Ver documentación','detail.errorLoad':'Error al cargar',
+  'spec.method':'Metodo','spec.endpoint':'Endpoint','spec.category':'Categoría','spec.version':'Versión','spec.releaseDate':'Fecha de Lanzamiento','spec.example':'Ejemplo','spec.exampleN':'Ejemplo {n}',
+  'desc.overview':'Descripción General','desc.thisEndpoint':'este endpoint',
+  'desc.noCustom.title':'📝 Sin descripción personalizada','desc.noCustom.body':'Descripción personalizada pendiente de creación en <code>{name}</code>.',
+  'struct.download':'📥 Descargar {file} completo','struct.view':'👁️ Ver {file} completo','struct.none':'No se encontraron bloques.',
+  'tech.title':'Detalles Técnicos','tech.type':'Tipo:','tech.required':'Obligatorios:','tech.constraints':'Restricciones:',
+  'oneOf.title':'⚠️ Exclusivo (oneOf):','oneOf.body':'se debe incluir <u>solo uno</u> de:','word.or':'o','word.and':'y',
+  'ifthen.title':'🔀 Condicional (if/then):','ifthen.if':'si','ifthen.then':'entonces','ifthen.reqPl':'son obligatorios','ifthen.reqSg':'es obligatorio',
+  'table.field':'Campo','table.desc':'Descripción','table.type':'Tipo','table.req':'Req.','table.constraints':'Restricciones','table.fieldsTitle':'📝 Descripción de campos',
+  'yes':'Si','no':'No','noDesc':'Sin descripción.',
+  'enums.none':'No se encontraron campos enum en este schema.','enums.code':'Código','enums.meaning':'Significado','enums.usedIn':'Usado en:','enums.allowed':'Valores admitidos ({n})','enums.default':'por defecto','enums.more':'+{n} valores más',
+  'example.none':'No hay fichero de ejemplo en esta carpeta.',
+  'btn.download':'Descargar','btn.viewGithub':'Ver en GitHub','btn.viewContent':'Ver contenido','btn.hide':'Ocultar','btn.copy':'Copiar','btn.copied':'✓ Copiado',
+  'versions.count':'{n} fichero(s) en {m} carpeta(s)','versions.emptyTitle':'Carpeta vacía o aun no creada','versions.emptyBody':'No se han encontrado ficheros en <code>{path}</code>.','versions.viewFolder':'Ver carpeta en GitHub','versions.general':'General','versions.loadFail':'No se pudo cargar','versions.loadFailMsg':'No se pudo cargar: ','versions.truncated':'… (truncado)',
+  'val.selectPlaceholder':'— Selecciona un mensaje —','val.loadError':'Error cargando mensajes',
+  'resp.httpCodes':'Códigos de estado HTTP','resp.state':'Estado','resp.msgStruct':'Estructura del mensaje','resp.enums':'Enumeraciones','resp.response':'Respuesta','resp.labelIni':'Respuesta API','resp.labelCb':'Callback de errores','resp.example':'Ejemplo','resp.noExample':'Sin ejemplo en la carpeta.',
+  'resp.noSchemas.title':'No se encontraron los schemas de respuesta','resp.noSchemas.body':'Sube a <code>{dir}/</code> los ficheros <code>SchemaResponseInitial.json</code> y <code>SchemaResponseCallback.json</code> (con sus ejemplos).',
+  'verr.enum':'Valor no permitido. Valores admitidos: {v}','verr.const':'Valor obligatorio: {v}','verr.maxLength':'Longitud máxima permitida: {v} caracteres','verr.minLength':'Longitud mínima requerida: {v} caracteres','verr.pattern':'No cumple el patron requerido: {v}','verr.format':'Formato inválido, se esperaba: {v}','verr.type':'Tipo incorrecto, se esperaba: {v}','verr.maximum':'Valor máximo permitido: {v}','verr.minimum':'Valor mínimo permitido: {v}','verr.exclusiveMaximum':'Debe ser menor que: {v}','verr.exclusiveMinimum':'Debe ser mayor que: {v}','verr.multipleOf':'Debe ser multiplo de: {v}','verr.maxItems':'Máximo de elementos permitido: {v}','verr.minItems':'Mínimo de elementos requerido: {v}','verr.required':'Falta el campo obligatorio: {v}','verr.additionalProperties':'Propiedad no permitida: {v}','verr.oneOf':'Debe cumplir exactamente uno de los esquemas permitidos','verr.default':'Error de validación',
+  'vstatus.syntaxInvalid':'❌ JSON inválido (error de sintaxis)','vstatus.schemaLoadFail':'⚠️ No se pudo cargar el esquema','vstatus.schemaCompileFail':'⚠️ El esquema no se pudo compilar','vstatus.valid':'✅ JSON válido','vstatus.invalid':'❌ JSON inválido',
+  'vmeta.noStatus.badge':'Sin estado','vmeta.noStatus.title':'Esperando validación','vmeta.noStatus.text':'Sube un fichero para lanzar la validación.','vmeta.ok.badge':'Válido','vmeta.ok.title':'Validación completada','vmeta.ok.text':'El fichero cumple con el esquema.','vmeta.err.badge':'Inválido','vmeta.err.title':'Se detectaron errores','vmeta.err.text':'El fichero no cumple con el esquema.','vmeta.warn.badge':'Atención','vmeta.warn.title':'No se pudo validar','vmeta.info.badge':'Info','vmeta.info.title':'Estado',
+  'vtable.num':'#','vtable.field':'Campo','vtable.error':'Error','vviewer.title':'📄 JSON validado'
+ },
+ en: {
+  'hero.tagline':'Developer Documentation Portal',
+  'hero.subtitle':'Technical specifications, message schemas and integration guides for the Generix Spain Warehouse Management System (WMS) API.',
+  'hero.cta.explore':'Explore endpoints','hero.cta.resources':'Resources',
+  'stats.endpoints':'Documented endpoints','stats.comm':'Communication','stats.protocol':'Protocol','stats.format':'Integration format','stats.generix':'Generix Spain',
+  'sec.eyebrow':'Documentation center · WMS API','sec.title':'Endpoints and integration messages',
+  'sec.subtitle':'Select a message to explore its full schema: fields, types, validations and payload examples.',
+  'res.history.badge':'History','res.history.title':'Schema versions','res.history.desc':'Browse and download the different published versions of the JSON schemas.','res.history.link':'View versions',
+  'res.resp.badge':'Schema','res.resp.title':'Responses','res.resp.desc':'JSON structure of WMS responses: fields, validations and example.','res.resp.link':'View responses',
+  'res.val.badge':'Tool','res.val.title':'Validation','res.val.desc':'Validate your JSON file against the schema of any WMS message.','res.val.link':'Open validator',
+  'crumb.docs':'Documentation','crumb.versions':'Schema versions','crumb.validation':'Validation','crumb.responses':'Responses',
+  'tabs.desc':'Overview','tabs.struct':'Structure','tabs.enums':'Enumerations','tabs.example':'Example','tabs.versions':'Versions',
+  'sidebar.goto':'Go to','example.title':'Examples','endpointVersions.title':'Available versions','endpointVersions.none':'There are no versions for this endpoint.','endpointVersions.current':'Latest published version','endpointVersions.compare':'Compare with previous','endpointVersions.compareTitle':'Version comparison','endpointVersions.noChanges':'No relevant changes were detected between these two versions.','endpointVersions.added':'Added','endpointVersions.removed':'Removed','endpointVersions.changed':'Changed',
+  'example.notice':'<strong>⚠️ Notice:</strong> The data used in these examples is not related to real data. Confirm with your WMS consultant that the values are correct.',
+  'versions.h1':'Schema versions','versions.desc':'Live listing from the repository. Any folder or file added appears here automatically.',
+  'val.h1':'Message validator','val.desc':'Select the message type, upload your JSON file and validate it against the official WMS schema.','val.label':'Message to validate',
+  'val.dropzone.disabled':'First select a message, then drag your JSON or click','val.dropzone.enabled':'Drag your JSON or click',
+  'resp.h1':'API responses','resp.desc':'The API is asynchronous: it returns an immediate response (HTTP) and, if it detects validation errors, sends a callback to the endpoint the client exposes.',
+  'footer.desc':'WMS API technical documentation · Generix Spain · Message and integration specifications.','footer.bottom2':'WMS technical specifications and integration',
+  'aria.top':'Back to top',
+  'loading':'Loading…','empty.none':'No endpoints published yet.',
+  'err.repo.title':'Could not connect to the repository','err.repo.body':'Check the CONFIG values (owner, repo, branch).',
+  'empty.title':'No endpoints published','empty.hint':'Create a folder in <code>{path}/</code> with a <code>schema.json</code>.',
+  'card.comingSoon':'Coming soon','card.fields_sg':'field','card.fields_pl':'fields','card.viewDoc':'View documentation','detail.errorLoad':'Failed to load',
+  'spec.method':'Method','spec.endpoint':'Endpoint','spec.category':'Category','spec.version':'Version','spec.releaseDate':'Release date','spec.example':'Example','spec.exampleN':'Example {n}',
+  'desc.overview':'Overview','desc.thisEndpoint':'this endpoint',
+  'desc.noCustom.title':'📝 No custom description','desc.noCustom.body':'Custom description pending creation in <code>{name}</code>.',
+  'struct.download':'📥 Download full {file}','struct.view':'👁️ View full {file}','struct.none':'No blocks found.',
+  'tech.title':'Technical details','tech.type':'Type:','tech.required':'Required:','tech.constraints':'Constraints:',
+  'oneOf.title':'⚠️ Exclusive (oneOf):','oneOf.body':'only <u>one</u> of these must be included:','word.or':'or','word.and':'and',
+  'ifthen.title':'🔀 Conditional (if/then):','ifthen.if':'if','ifthen.then':'then','ifthen.reqPl':'are required','ifthen.reqSg':'is required',
+  'table.field':'Field','table.desc':'Description','table.type':'Type','table.req':'Req.','table.constraints':'Constraints','table.fieldsTitle':'📝 Field descriptions',
+  'yes':'Yes','no':'No','noDesc':'No description.',
+  'enums.none':'No enum fields found in this schema.','enums.code':'Code','enums.meaning':'Meaning','enums.usedIn':'Used in:','enums.allowed':'Allowed values ({n})','enums.default':'default','enums.more':'+{n} more values',
+  'example.none':'No example file in this folder.',
+  'btn.download':'Download','btn.viewGithub':'View on GitHub','btn.viewContent':'View content','btn.hide':'Hide','btn.copy':'Copy','btn.copied':'✓ Copied',
+  'versions.count':'{n} file(s) in {m} folder(s)','versions.emptyTitle':'Empty or not yet created folder','versions.emptyBody':'No files found in <code>{path}</code>.','versions.viewFolder':'View folder on GitHub','versions.general':'General','versions.loadFail':'Could not load','versions.loadFailMsg':'Could not load: ','versions.truncated':'… (truncated)',
+  'val.selectPlaceholder':'— Select a message —','val.loadError':'Error loading messages',
+  'resp.httpCodes':'HTTP status codes','resp.state':'Status','resp.msgStruct':'Message structure','resp.enums':'Enumerations','resp.response':'Response','resp.labelIni':'API response','resp.labelCb':'Error callback','resp.example':'Example','resp.noExample':'No example in the folder.',
+  'resp.noSchemas.title':'Response schemas not found','resp.noSchemas.body':'Upload to <code>{dir}/</code> the files <code>SchemaResponseInitial.json</code> and <code>SchemaResponseCallback.json</code> (with their examples).',
+  'verr.enum':'Value not allowed. Allowed values: {v}','verr.const':'Required value: {v}','verr.maxLength':'Maximum allowed length: {v} characters','verr.minLength':'Minimum required length: {v} characters','verr.pattern':'Does not match required pattern: {v}','verr.format':'Invalid format, expected: {v}','verr.type':'Incorrect type, expected: {v}','verr.maximum':'Maximum allowed value: {v}','verr.minimum':'Minimum allowed value: {v}','verr.exclusiveMaximum':'Must be less than: {v}','verr.exclusiveMinimum':'Must be greater than: {v}','verr.multipleOf':'Must be a multiple of: {v}','verr.maxItems':'Maximum allowed items: {v}','verr.minItems':'Minimum required items: {v}','verr.required':'Missing required field: {v}','verr.additionalProperties':'Property not allowed: {v}','verr.oneOf':'Must match exactly one of the allowed schemas','verr.default':'Validation error',
+  'vstatus.syntaxInvalid':'❌ Invalid JSON (syntax error)','vstatus.schemaLoadFail':'⚠️ Could not load the schema','vstatus.schemaCompileFail':'⚠️ The schema could not be compiled','vstatus.valid':'✅ Valid JSON','vstatus.invalid':'❌ Invalid JSON',
+  'vmeta.noStatus.badge':'No status','vmeta.noStatus.title':'Waiting for validation','vmeta.noStatus.text':'Upload a file to run validation.','vmeta.ok.badge':'Valid','vmeta.ok.title':'Validation completed','vmeta.ok.text':'The file complies with the schema.','vmeta.err.badge':'Invalid','vmeta.err.title':'Errors detected','vmeta.err.text':'The file does not comply with the schema.','vmeta.warn.badge':'Warning','vmeta.warn.title':'Could not validate','vmeta.info.badge':'Info','vmeta.info.title':'Status',
+  'vtable.num':'#','vtable.field':'Field','vtable.error':'Error','vviewer.title':'📄 Validated JSON'
+ }
+};
+function _detectLang(){
+  try { const s = localStorage.getItem('wms_lang'); if (s && I18N_LANGS.includes(s)) return s; } catch(e){}
+  const n = (navigator.language || I18N_DEFAULT).slice(0,2).toLowerCase();
+  return I18N_LANGS.includes(n) ? n : I18N_DEFAULT;
+}
+let LANG = _detectLang();
+function t(key, vars){
+  const d = I18N[LANG] || {}, f = I18N[I18N_DEFAULT] || {};
+  let s = (key in d) ? d[key] : ((key in f) ? f[key] : key);
+  if (vars) for (const k in vars) s = s.split('{'+k+'}').join(vars[k]);
+  return s;
+}
+function setLang(l){ if(!I18N_LANGS.includes(l)) return; try{ localStorage.setItem('wms_lang', l); }catch(e){} location.reload(); }
+function localizeNode(node){
+  if (Array.isArray(node)) { node.forEach(localizeNode); return node; }
+  if (node && typeof node === 'object') {
+      ['title','description','label','meaning','transport'].forEach(b => {
+      const k = b + '_' + LANG;
+      if (node[k] != null) node[b] = node[k];               // usa el idioma activo (campo base = reserva)
+      I18N_LANGS.forEach(l => { delete node[b + '_' + l]; }); // oculta las variantes en el JSON mostrado
+      });
+    Object.values(node).forEach(localizeNode);
+  }
+  return node;
+}
+function applyStaticI18n(){
+  document.documentElement.lang = LANG;
+  document.querySelectorAll('[data-i18n]').forEach(el => { const v = t(el.getAttribute('data-i18n')); if (v != null) el.textContent = v; });
+  document.querySelectorAll('[data-i18n-html]').forEach(el => { const v = t(el.getAttribute('data-i18n-html')); if (v != null) el.innerHTML = v; });
+  document.querySelectorAll('[data-i18n-attr]').forEach(el => {
+    el.getAttribute('data-i18n-attr').split(';').forEach(p => { const i = p.indexOf(':'); if (i < 0) return; el.setAttribute(p.slice(0,i).trim(), t(p.slice(i+1).trim())); });
+  });
+  const dz = document.getElementById('dropzone');
+  if (dz && dz.childNodes[0]) dz.childNodes[0].nodeValue = ' ' + t('val.dropzone.disabled') + ' ';
+  const langSwitch = document.getElementById('langSwitch');
+  if (langSwitch) {
+    const current = document.getElementById('langCurrent');
+    const menu    = document.getElementById('langMenu');
+    const flag    = l => `<span class="lang-flag">${I18N_FLAGS[l] ? `<img src="${I18N_FLAGS[l]}" alt="">` : ''}</span>`;
+    const label   = l => `${l.toUpperCase()} · ${I18N_LABELS[l] || l}`;
+
+    current.innerHTML = flag(LANG) + `<span>${label(LANG)}</span>`;
+    menu.innerHTML = I18N_LANGS.map(l =>
+      `<li class="lang-option${l === LANG ? ' active' : ''}" role="option" data-lang="${l}" aria-selected="${l === LANG}">${flag(l)}<span>${label(l)}</span></li>`
+    ).join('');
+
+    const close = () => { langSwitch.classList.remove('open'); current.setAttribute('aria-expanded', 'false'); };
+    current.onclick = e => {
+      e.stopPropagation();
+      const open = langSwitch.classList.toggle('open');
+      current.setAttribute('aria-expanded', open ? 'true' : 'false');
+    };
+    menu.querySelectorAll('.lang-option').forEach(op => {
+      op.onclick = e => { e.stopPropagation(); setLang(op.dataset.lang); };
+    });
+    current.addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); current.click(); }
+      else if (e.key === 'Escape') close();
+    });
+    document.addEventListener('click', close);
+  }
+}
+window.t = t; window.LANG = LANG; window.I18N = I18N; window.setLang = setLang;
+document.addEventListener('DOMContentLoaded', applyStaticI18n);
+</script>
+
+<script>
+/* ══════════════════════════════════════════════════════════
+   CONFIG
+   ══════════════════════════════════════════════════════════ */
+const CONFIG = {
+  owner:          'generix-b2b',
+  repo:           'API_JSON_WMS',
+  branch:         'main',
+  contentPath:    'Messages',   // carpeta raíz con los subfolders
+  versionsPath:   'Versions',  // carpeta con las versiones de esquemas
+  responsesPath:  'Responses', // carpeta con las respuestas
+  token:          ''
+};
+window.CONFIG = CONFIG;
+
+/* ── GitHub helpers ──────────────────────────────────────── */
+function ghHeaders() {
+  const h = { 'Accept': 'application/vnd.github.v3+json' };
+  if (CONFIG.token) h['Authorization'] = `token ${CONFIG.token}`;
+  return h;
+}
+async function ghList(path) {
+  const r = await fetch(
+    `https://api.github.com/repos/${CONFIG.owner}/${CONFIG.repo}/contents/${path}?ref=${CONFIG.branch}`,
+    { headers: ghHeaders() }
+  );
+  if (!r.ok) throw new Error(`GitHub API ${r.status}`);
+  return r.json();
+}
+async function rawFetch(path) {
+  const r = await fetch(
+    `https://raw.githubusercontent.com/${CONFIG.owner}/${CONFIG.repo}/${CONFIG.branch}/${path}`
+  );
+  if (!r.ok) throw new Error(`404: ${path}`);
+  return r.text();
+}
+
+/* ── View management ─────────────────────────────────────── */
+const _VIEWS = ['view-index','view-detail','view-versions','view-validacion','view-respuestas'];
+function showView(id) {
+  _VIEWS.forEach(v => {
+    const el = document.getElementById(v);
+    if (el) el.style.display = (v === id) ? 'block' : 'none';
+  });
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+function showIndex()  { showView('view-index'); }
+function showDetail() { showView('view-detail'); }
+
+/* ── Init: auto-discover endpoint folders ────────────────── */
+async function init() {
+  renderSkeletons(6);
+  try {
+    const tree    = await loadRepoTree();
+    const folders = buildCacheFromTree(tree);
+
+    if (!folders.length) { showEmpty(t('empty.none')); return; }
+
+    const hasResp = tree.some(it => it.type === 'blob' && it.path.startsWith(CONFIG.responsesPath + '/'));
+    const respCard = document.getElementById('resp-card');
+    if (respCard) respCard.style.display = hasResp ? '' : 'none';
+
+    const settled = await Promise.allSettled(folders.map(f => loadCard(f)));
+    const eps = settled
+      .filter(r => r.status === 'fulfilled' && r.value)
+      .map(r => r.value);
+
+    const numOf = e => {
+      const m = (e.schema.title || e.folder || '').match(/(\d+)/);
+      return m ? parseInt(m[1], 10) : Number.MAX_SAFE_INTEGER;
+    };
+    eps.sort((a, b) => numOf(a) - numOf(b) || (a.schema.title || a.folder).localeCompare(b.schema.title || b.folder));
+
+    document.getElementById('stat-count').textContent = eps.length;
+    renderGrid(eps);
+  } catch (err) {
+    document.getElementById('endpoints-grid').innerHTML =
+      `<div class="error-banner">
+        <strong>${t('err.repo.title')}</strong>
+        ${t('err.repo.body')}<br>
+        <small style="opacity:.7">${err.message}</small>
+      </div>`;
+  }
+}
+
+/* ── Descubre los ficheros JSON (+ readme) dentro de una carpeta ── */
+const _dirCache = {};
+const _LS_KEY   = `wms_tree_${CONFIG.repo}_${CONFIG.contentPath}`;
+const _LS_TTL   = 60 * 60 * 1000; // 1 hora
+
+/* Una sola llamada API para todo el repo, cacheada en localStorage */
+async function loadRepoTree() {
+  try {
+    const stored = JSON.parse(localStorage.getItem(_LS_KEY) || '{}');
+    if (stored.ts && (Date.now() - stored.ts) < _LS_TTL && stored.tree) {
+      return stored.tree;
+    }
+  } catch {}
+
+  const r = await fetch(
+    `https://api.github.com/repos/${CONFIG.owner}/${CONFIG.repo}/git/trees/${CONFIG.branch}?recursive=1`,
+    { headers: ghHeaders() }
+  );
+  if (!r.ok) throw new Error(`GitHub API ${r.status}`);
+  const data = await r.json();
+
+  try {
+    localStorage.setItem(_LS_KEY, JSON.stringify({ ts: Date.now(), tree: data.tree }));
+  } catch {}
+
+  return data.tree;
+}
+
+function buildDirResult(files) {
+  const jsons = files.filter(f => f.name.toLowerCase().endsWith('.json'));
+  const mds   = files.filter(f => f.name.toLowerCase().endsWith('.md'));
+
+  const schemaFile =
+    jsons.find(f => f.name.toLowerCase() === 'schema.json') ||
+    jsons.find(f => f.name.toLowerCase().startsWith('schema')) ||
+    jsons[0] || null;
+
+  const exampleFiles = jsons.filter(f =>
+    f !== schemaFile &&
+    (f.name.toLowerCase().startsWith('example') || f.name.toLowerCase().startsWith('ejemplo'))
+  );
+
+  const readmeFile =
+    mds.find(f => f.name.toLowerCase() === `readme.${LANG}.md`) ||
+    mds.find(f => f.name.toLowerCase() === 'readme.md') ||
+    mds[0] || null;
+
+  return {
+    schemaFile,
+    exampleFiles: exampleFiles.length ? exampleFiles : jsons.filter(f => f !== schemaFile),
+    readmeFile
+  };
+}
+
+function buildCacheFromTree(tree) {
+  const prefix      = CONFIG.contentPath + '/';
+  const folderFiles = {};
+
+  tree.forEach(item => {
+    if (!item.path.startsWith(prefix)) return;
+    const rest  = item.path.slice(prefix.length);
+    const parts = rest.split('/');
+    if (parts.length !== 2 || item.type !== 'blob') return;
+    const [folderName, fileName] = parts;
+    if (!folderFiles[folderName]) folderFiles[folderName] = [];
+    folderFiles[folderName].push({ name: fileName });
+  });
+
+  Object.entries(folderFiles).forEach(([folder, files]) => {
+    _dirCache[folder] = buildDirResult(files);
+  });
+
+  return Object.keys(folderFiles);
+}
+
+async function discoverFiles(folder) {
+  if (_dirCache[folder]) return _dirCache[folder];
+  const tree = await loadRepoTree();
+  buildCacheFromTree(tree);
+  return _dirCache[folder] || { schemaFile: null, exampleFiles: [], readmeFile: null };
+}
+
+let _detailDir = '';   // directorio que contiene el schema abierto actualmente
+
+async function discoverFilesAt(dir) {
+  if (_dirCache[dir]) return _dirCache[dir];
+  const tree = await loadRepoTree();
+  const prefix = dir + '/';
+  const files = tree
+    .filter(it => it.type === 'blob' && it.path.startsWith(prefix) && !it.path.slice(prefix.length).includes('/'))
+    .map(it => ({ name: it.path.slice(prefix.length) }));
+  _dirCache[dir] = buildDirResult(files);
+  return _dirCache[dir];
+}
+
+async function loadCard(folder) {
+  const { schemaFile } = await discoverFiles(folder);
+  if (!schemaFile) throw new Error(`No se encontró ningún JSON en "${folder}"`);
+  const text = await rawFetch(`${CONFIG.contentPath}/${folder}/${schemaFile.name}`);
+  return { folder, schema: localizeNode(JSON.parse(text)) };
+}
+
+/* ── Index: render card grid ─────────────────────────────── */
+function autoIcon(folder, schema) {
+  if (schema['x-wms-icon']) return schema['x-wms-icon'];
+  // Try to extract a code from schema title (e.g. "GECOM10" from "GECOM10 - Supplier Master Data")
+  const m = (schema.title || '').match(/^([A-Z0-9]{3,8})\b/);
+  if (m) return m[1];
+  // Fallback: folder name uppercased (first 6 chars, no hyphens)
+  return folder.replace(/-/g, '').slice(0, 6).toUpperCase();
+}
+
+function isRecent(releaseDate, days = 5) {
+  if (!releaseDate) return false;
+  const d = new Date(releaseDate);
+  if (isNaN(d)) return false;
+  // Normalizar a medianoche para comparar solo por día (sin la hora)
+  const rel   = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+  const now   = new Date();
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const dayDiff = Math.round((today - rel) / 86400000);
+  return dayDiff >= 0 && dayDiff <= days;
+}
+function renderGrid(eps) {
+  const nav = document.getElementById('endpoint-nav');
+  nav.innerHTML = `<div class="endpoint-nav-grid">
+      ${eps.map(({folder,schema}) => {
+        const ep     = schema['x-wms-endpoint'] || {};
+        const recent = isRecent(ep.releaseDate);
+        return`<button
+            class="endpoint-link ${recent ? 'is-new' : ''}"
+            data-folder="${folder}"
+            onclick="scrollToEndpoint('${folder}')">
+            ${esc(folder || schema.title)}
+            ${recent ? `<span class="nav-new-badge" data-folder="${folder}">✦</span>` : ''}
+        </button>
+      `}).join('')}
+    </div>
+  `;
+  document.querySelectorAll('.endpoint-link')
+    .forEach(btn => {
+        btn.addEventListener('click', () => {
+            scrollToEndpoint(btn.dataset.folder);
+        });
+  });
+
+  document.getElementById('endpoints-grid').innerHTML = eps.map(({ folder, schema }) => {
+    const ep     = schema['x-wms-endpoint'] || {};
+    const method = (ep.method || '').toUpperCase();
+    const cat    = ep.category || '';
+    const ver    = ep.version || '';
+    const soon    = ep.comingSoon === true;
+    const icon   = autoIcon(folder, schema);
+    const title  = schema.title || folder;
+    const desc   = schema.description || '';
+    const nf     = countTopFields(schema);
+
+    
+    const recent     = isRecent(ep.releaseDate);
+    const folderAttr = String(folder).replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+
+    // return `<div class="card${recent ? ' is-new' : ''} ${soon ? ' is-coming-soon' : ''}" id="endpoint-${folder}" onclick="openEndpoint('${folderAttr}')">
+    //   ${recent ? '<span class="new-flag">✦ NEW</span>' : ''}
+    //   ${soon ? '<span class="coming-soon-flag" style="text-align: center;">⏳<br/>SOON</span>' : ''}
+    //   <div class="card-icon">${esc(icon)}</div>
+    //   <div class="card-meta">
+    //     ${method ? `<span class="badge badge-${esc(method.toLowerCase())}">${esc(method)}</span>` : ''}
+    //     ${cat    ? `<span class="badge badge-cat">${esc(cat)}</span>` : ''}
+    //     ${ver    ? `<span class="badge badge-ver">${esc(ver)}</span>` : ''}
+    //   </div>
+    //   <h3>${esc(title)}</h3>
+    //   <p>${esc(desc)}</p>
+    //   <span class="card-link">${nf} ${nf !== 1 ? t('card.fields_pl') : t('card.fields_sg')} · ${t('card.viewDoc')}</span>
+    // </div>`;
+
+        return `<div class="card${recent ? ' is-new' : ''}${soon ? ' is-coming-soon' : ''}" id="endpoint-${folder}"
+      ${soon ? 'aria-disabled="true" title="' + esc(t('card.comingSoon')) + '"' : `onclick="openEndpoint('${folderAttr}')"`}>
+      ${recent && !soon ? '<span class="new-flag">✦ NEW</span>' : ''}
+      ${soon ? '<span class="coming-soon-flag" style="text-align: center;">⏳<br/>SOON</span>' : ''}
+      <div class="card-icon">${esc(icon)}</div>
+      <div class="card-meta">
+        ${method ? `<span class="badge badge-${esc(method.toLowerCase())}">${esc(method)}</span>` : ''}
+        ${cat    ? `<span class="badge badge-cat">${esc(cat)}</span>` : ''}
+        ${ver    ? `<span class="badge badge-ver">${esc(ver)}</span>` : ''}
+      </div>
+      <h3>${esc(title)}</h3>
+      <p>${esc(desc)}</p>
+      <span class="card-link">${soon
+        ? `⏳ ${t('card.comingSoon')}`
+        : `${nf} ${nf !== 1 ? t('card.fields_pl') : t('card.fields_sg')} · ${t('card.viewDoc')}`}</span>
+    </div>`;
+
+  }).join('');
+}
+function scrollToEndpoint(folder) {
+    document.querySelectorAll('.endpoint-link').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.card').forEach(b => b.classList.remove('active'));
+    const btn = document.querySelector(`.endpoint-link[data-folder="${folder}"]`);
+    if (btn) {btn.classList.add('active');}
+    const card = document.getElementById(`endpoint-${folder}`);
+    if (!card) return;
+    card.classList.add('active');
+    card.scrollIntoView({behavior: 'smooth',block: 'center'});
+}
+function renderSkeletons(n) {
+  document.getElementById('endpoints-grid').innerHTML =
+    Array.from({ length: n }).map(() =>
+      `<div class="skeleton-card">
+        <div class="sk-icon"></div>
+        <div class="sk-line" style="width:55%"></div>
+        <div class="sk-line" style="width:80%"></div>
+        <div class="sk-line" style="width:40%"></div>
+      </div>`
+    ).join('');
+}
+
+function showEmpty(msg) {
+  document.getElementById('endpoints-grid').innerHTML =
+    `<div class="empty-state">
+      <div class="ei">📂</div>
+      <h3>${t('empty.title')}</h3>
+      <p>${msg}<br>${t('empty.hint', { path: CONFIG.contentPath })}</p>
+    </div>`;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   DETAIL VIEW — openEndpoint
+   ═══════════════════════════════════════════════════════════ */
+  let _examples = [];
+  let _schemaRaw = '';
+
+async function openEndpoint(folder, dir) {
+  _detailDir = dir || `${CONFIG.contentPath}/${folder}`;
+  showDetail();
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === 'descripcion'));
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.toggle('active', p.id === 'tab-descripcion'));
+  document.getElementById('d-title').textContent = t('loading');
+  document.getElementById('d-breadcrumb-name').textContent = folder;
+  document.getElementById('d-desc').textContent  = '';
+  document.getElementById('ep-badges').innerHTML = '';
+  document.getElementById('desc-body').innerHTML = '<p style="color:var(--gray-500)">' + t('loading') + '</p>';
+  document.getElementById('estructura-body').innerHTML    = '<p style="color:var(--gray-500)">' + t('loading') + '</p>';
+  document.getElementById('enumeraciones-body').innerHTML = '<p style="color:var(--gray-500)">' + t('loading') + '</p>';
+  document.getElementById('ejemplo-inner').innerHTML = '<p style="color:var(--gray-500)">' + t('loading') + '</p>';
+  if (document.getElementById('endpointVersionsStatus')) document.getElementById('endpointVersionsStatus').textContent = t('loading');
+  if (document.getElementById('endpointVersionsContainer')) document.getElementById('endpointVersionsContainer').innerHTML = '';
+  document.getElementById('snav-btns-estructura').innerHTML    = '';
+  document.getElementById('snav-btns-enumeraciones').innerHTML = '';
+  document.querySelectorAll('.card').forEach(c => c.classList.remove('active'));
+  document.querySelectorAll('.endpoint-link').forEach(c => c.classList.remove('active'));
+  
+  const card = document.getElementById(`endpoint-${folder}`);
+  if (card && card.classList.contains('is-coming-soon')) return;
+  if (card) card.classList.add('active');
+  const btn = document.querySelector(`.endpoint-link[data-folder="${folder}"]`);
+  if (btn) btn.classList.add('active');
+
+
+  _examples = [];
+
+  try {
+    const { schemaFile, exampleFiles, readmeFile } = await discoverFilesAt(_detailDir);
+    const [sRes, rRes] = await Promise.allSettled([
+      schemaFile ? rawFetch(`${_detailDir}/${schemaFile.name}`) : Promise.reject('no schema'),
+      readmeFile ? rawFetch(`${_detailDir}/${readmeFile.name}`) : Promise.reject('no readme')
+    ]);
+
+    _schemaRaw      = sRes.status === 'fulfilled' ? sRes.value : '';
+    const schema    = _schemaRaw ? localizeNode(JSON.parse(_schemaRaw)) : {};
+    const readmeRaw = rRes.status === 'fulfilled' ? rRes.value : null;
+
+    const exResults = await Promise.allSettled(
+      exampleFiles.map(f => rawFetch(`${_detailDir}/${f.name}`))
+    );
+    const examplesData = exampleFiles
+      .map((f, i) => ({ name: f.name, raw: exResults[i].status === 'fulfilled' ? exResults[i].value : null }))
+      .filter(e => e.raw !== null);
+
+    const ep     = schema['x-wms-endpoint'] || {};
+    const method = (ep.method || '').toUpperCase();
+    const title  = schema.title || folder;
+    document.getElementById('d-title').textContent = title;
+    document.getElementById('d-breadcrumb-name').textContent = title;
+    document.getElementById('d-desc').textContent  = schema['x-wms-author'] || '';
+    document.getElementById('ep-badges').innerHTML = [
+      method          ? `<span class="method-badge ${method}">${method}</span>` : '',
+      ep.path         ? `<span class="ep-path">${ep.path}</span>` : '',
+      ep.version      ? `<span class="version-pill">${ep.version}</span>` : '',
+      ep.category     ? `<span class="cat-pill">${ep.category}</span>` : '',     
+      ep.releaseDate  ? `<span class="cat-pill">${ep.releaseDate}</span>` : ''
+    ].join('');
+
+    renderDescripcion(schema, readmeRaw, examplesData);
+    renderEstructura(schema, folder, schemaFile ? schemaFile.name : null);
+    renderEnumeraciones(schema);
+    renderEjemplo(examplesData, folder);
+    await renderEndpointVersions(folder);
+
+  } catch (err) {
+    document.getElementById('d-title').textContent = t('detail.errorLoad');
+    document.getElementById('d-desc').textContent  = err.message;
+    document.getElementById('desc-body').innerHTML = `<p style="color:#cf1322">${esc(err.message)}</p>`;
+  }
+}
+
+/* ═══ TAB 1 — DESCRIPCIÓN ═══ */
+function renderDescripcion(schema, readmeText, examplesData) {
+  const ep = schema['x-wms-endpoint'] || {};
+  let html = '';
+  
+  html += `<h2>${esc(schema.title || t('desc.overview'))}</h2>`;
+  if (schema.description) html += `<p>${esc(schema.description)}</p>`;
+
+  const specs = [];
+    if (ep.method)      specs.push({ label:t('spec.method'),    value: ep.method.toUpperCase() });
+    if (ep.path)        specs.push({ label:t('spec.endpoint'),  value: ep.path });
+    if (ep.category)    specs.push({ label:t('spec.category'), value: ep.category });
+    if (ep.version)     specs.push({ label:t('spec.version'),   value: ep.version });
+    if (ep.releaseDate) specs.push({ label:t('spec.releaseDate'), value: ep.releaseDate });
+    (examplesData || []).forEach((ex, i) => {
+      specs.push({ label: examplesData.length > 1 ? t('spec.exampleN',{n:i+1}) : t('spec.example'), value: ex.name, dlIdx: i });
+    });
+    if (specs.length) {
+      html += `<div class="spec-card">${specs.map(s =>
+        `${s.dlIdx === 0 ? '<div style="flex-basis:100%;height:0;margin:0"></div>' : ''}<div class="spec-item">
+          <span class="spec-label">${esc(s.label)}</span>
+          ${s.dlIdx !== undefined
+            ? `<span class="spec-value"><a href="#" onclick="downloadExample(${s.dlIdx},'${esc(s.value)}');return false;" class="download-link" style="font-family:monospace;font-size:.85rem">${esc(s.value)}</a></span>`
+            : `<span class="spec-value">${esc(s.value)}</span>`}
+        </div>`
+      ).join('')}</div>`;
+    }
+
+  if (readmeText) {
+    /* readme.md found → append after spec card */
+    html += simpleMarkdown(readmeText, true);
+
+  } else {
+    /* No readme.md → show auto-generated description + spec card + info block */
+    html += `<div class="info-box">
+      <strong>${t('desc.noCustom.title')}</strong>
+      ${t('desc.noCustom.body', { name: esc(schema.title || t('desc.thisEndpoint')) })}
+    </div>`;
+  }
+
+  document.getElementById('desc-body').innerHTML = html;
+}
+
+function simpleMarkdown(md, skipFirstH = false) {
+  const lines = md.split('\n');
+  let html = '', inUl = false, firstHDone = false;
+  for (const raw of lines) {
+    const line = raw.trimEnd();
+    if (line.startsWith('### ')) {
+      if(inUl){html+='</ul>';inUl=false;}
+      html+=`<h3>${esc(line.slice(4))}</h3>`;
+    } else if (line.startsWith('## ') || line.startsWith('# ')) {
+      if(inUl){html+='</ul>';inUl=false;}
+      if (skipFirstH && !firstHDone) {
+        firstHDone = true;
+        html += `<div style="border-bottom:2px solid var(--generix-orange-soft);margin:0 0 24px"></div>`;
+      } else {
+        const text = line.startsWith('## ') ? line.slice(3) : line.slice(2);
+        html += `<h2>${esc(text)}</h2>`;
+      }
+    }
+    else if (line.startsWith('- ') || line.startsWith('* ')) {
+      if (!inUl) { html+='<ul>'; inUl=true; }
+      html+=`<li>${inlineMd(line.slice(2))}</li>`;
+    } else if (line.startsWith('>')) {
+      if(inUl){html+='</ul>';inUl=false;}
+      const content = line.slice(1).replace(/^\s+/, '');   // quita '>' y los espacios que le sigan
+      const m = content.match(/^!(blue|green|red)\s+([\s\S]*)$/);
+      if (m) {
+        html+=`<div class="highlight-box hb-${m[1]}">${inlineMd(m[2])}</div>`;
+      } else {
+        html+=`<div class="highlight-box">${inlineMd(content)}</div>`;
+      }
+    } else if (line.trim()==='') {
+      if(inUl){html+='</ul>';inUl=false;}
+    } else {
+      if(inUl){html+='</ul>';inUl=false;}
+      html+=`<p>${inlineMd(line)}</p>`;
+    }
+  }
+  if(inUl) html+='</ul>';
+  return html;
+}
+function inlineMd(t) {
+  return esc(t)
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    .replace(/`(.+?)`/g, '<code style="background:var(--gray-100);padding:1px 5px;border-radius:3px;font-family:monospace">$1</code>');
+}
+
+/* ═══ TAB 2 — ESTRUCTURA ═══ */
+function renderEstructura(schema, folder, schemaFileName) {
+  const defs   = schema.$defs || schema.definitions || {};
+  const blocks = extractBlocks(schema, defs);
+  if (!blocks.length) {
+    document.getElementById('estructura-body').innerHTML = '<p style="color:var(--gray-500)">' + t('struct.none') + '</p>';
+    return;
+  }
+  const rawLink = folder && schemaFileName
+    ? `https://raw.githubusercontent.com/${CONFIG.owner}/${CONFIG.repo}/${CONFIG.branch}/${_detailDir}/${schemaFileName}`
+    : null;
+
+    let bodyHtml = schemaFileName
+    ? `<p style="margin-bottom:28px">
+        <a href="#" onclick="downloadSchema('${schemaFileName}'); return false;" class="download-link">${t('struct.download',{file:schemaFileName})}</a>
+        <br/>
+        <a href="${rawLink}" target="_blank" class="download-link">${t('struct.view',{file:schemaFileName})}</a>
+      </p>`
+    : '';
+  let navHtml = '';
+  blocks.forEach((blk, i) => {
+    const id = `blk-${i}`;
+    const snippet = JSON.stringify({ [blk.jsonKey || blk.label]: blk.schemaSnippet }, null, 2);
+    const fieldTbl = buildFieldTable(blk.properties, blk.required);
+    navHtml += `<button class="snav-btn" onclick="scrollToBlock('${id}',this)">${esc(blk.label.replace(/Wrapper$/i, ''))}</button>`;
+    bodyHtml += `
+      <div class="block-wrap" id="${id}" data-label="${esc(blk.label)}">
+        <div class="block-grid">
+          <div class="code-panel">
+            <div class="cp-header">${esc(blk.label)}</div>
+            <pre class="cp-pre">${esc(snippet)}</pre>
+          </div>
+          <div>
+            <div class="explanation-box"><p>${esc(blk.description || t('noDesc'))}</p></div>
+            <div class="tech-details">
+              <h4>${t('tech.title')}</h4>
+              <p><strong>${t('tech.type')}</strong> <span class="tag-type">${esc(blk.type || 'object')}</span></p>
+              ${blk.required && blk.required.length ? `<p><strong>${t('tech.required')}</strong> <span class="tag-req">${esc(blk.required.join(', '))}</span></p>` : ''}
+              ${blk.constraints ? `<p><strong>${t('tech.constraints')}</strong> ${esc(blk.constraints)}</p>` : ''}
+              ${(() => {
+                if (!blk.oneOf || !blk.oneOf.length) return '';
+                const opts = blk.oneOf.map(o => (o.required || []).join(' + ')).filter(Boolean);
+                if (!opts.length) return '';
+                return `<div style="margin-top:10px;background:#fff7ed;border-left:3px solid var(--generix-orange);
+                          padding:10px 12px;border-radius:4px">
+                  <strong style="color:var(--generix-orange-hover)">${t('oneOf.title')}</strong>
+                  ${t('oneOf.body')}
+                  ${opts.map(o => `<span class="tag-req" style="margin:2px">${esc(o)}</span>`).join(' ' + t('word.or') + ' ')}
+                </div>`;
+              })()}
+              ${(() => {
+                if (!blk.ifCond || !blk.thenCond) return '';
+                const condParts = [];
+                if (blk.ifCond.properties) {
+                  for (const [k, v] of Object.entries(blk.ifCond.properties)) {
+                    if (Array.isArray(v.enum)) condParts.push(`${k} = ${v.enum.join(' o ')}`);
+                    else if (v.const !== undefined) condParts.push(`${k} = ${v.const}`);
+                    else condParts.push(k);
+                  }
+                }
+                const thenReq = blk.thenCond.required || [];
+                if (!condParts.length || !thenReq.length) return '';
+                return `<div style="margin-top:10px;background:#eff6ff;border-left:3px solid #3b82f6;
+                          padding:10px 12px;border-radius:4px">
+                  <strong style="color:#1d4ed8">${t('ifthen.title')}</strong>
+                  ${t('ifthen.if')} ${condParts.map(c => `<span class="tag-type">${esc(c)}</span>`).join(' ' + t('word.and') + ' ')},
+                  ${t('ifthen.then')} ${thenReq.map(r => `<span class="tag-req" style="margin:2px">${esc(r)}</span>`).join(', ')}
+                  ${thenReq.length > 1 ? t('ifthen.reqPl') : t('ifthen.reqSg')}.
+                </div>`;
+              })()}
+            </div>
+          </div>
+        </div>
+        ${fieldTbl}
+        <div class="block-divider"></div>
+      </div>`;
+  });
+  document.getElementById('estructura-body').innerHTML    = bodyHtml;
+  document.getElementById('snav-btns-estructura').innerHTML = navHtml;
+}
+
+function extractBlocks(schema, defs) {
+  const blocks = [];
+  for (const [key, raw] of Object.entries(schema.properties || {})) {
+    const prop = resolveRef(raw, defs);
+    const type = prop.type || 'object';
+    if (type === 'array' && prop.items) {
+      const cons = [prop.minItems != null ? `minItems: ${prop.minItems}` : '', prop.maxItems != null ? `maxItems: ${prop.maxItems}` : ''].filter(Boolean).join(' · ');
+      blocks.push({ label: key, type: 'array', description: prop.description || '', schemaSnippet: trimSchema(prop, false), properties: {}, required: [], constraints: cons });
+      const items = resolveRef(prop.items, defs);
+      if (items.properties && !prop.items.$ref) {
+        const topProps = {};
+        for (const [k, v] of Object.entries(items.properties)) {
+          const res = resolveRef(v, defs);
+          if (res.type !== 'object' || !res.properties) topProps[k] = v;
+        }
+        blocks.push({ label: `${key}[ ] — campos principales`, jsonKey: key, type: 'object', description: items.description || '', schemaSnippet: trimSchema(items, true), properties: topProps, required: items.required || [], ifCond: items.if || null, thenCond: items.then || null });
+        for (const [k, v] of Object.entries(items.properties)) {
+          const res = resolveRef(v, defs);
+          if (res.type === 'object' && res.properties) {
+            blocks.push({ label: k, type: 'object', description: res.description || '', schemaSnippet: trimSchema(res, true), properties: res.properties, required: res.required || [] });
+          }
+        }
+      }
+    } else if (type === 'object' && prop.properties) {
+      blocks.push({ label: key, type: 'object', description: prop.description || '', schemaSnippet: trimSchema(prop, true), properties: prop.properties, required: prop.required || [], oneOf: prop.oneOf || null });
+    }
+  }
+  // Schemas con definitions/$defs: un bloque por cada definición tipo objeto
+  const addedLabels = new Set(blocks.map(b => b.label));
+  for (const [name, def] of Object.entries(defs)) {
+    if (def && def.type === 'object' && def.properties && !addedLabels.has(name)) {
+      blocks.push({
+        label: name,
+        type: 'object',
+        description: def.description || '',
+        schemaSnippet: trimSchema(def, true),
+        properties: def.properties,
+        required: def.required || [],
+        oneOf: def.oneOf || null,
+        ifCond: def.if || null,
+        thenCond: def.then || null
+      });
+      addedLabels.add(name);
+    }
+  }
+  return blocks;
+}
+
+function resolvePointer(ref, schema) {
+  if (!ref || !ref.startsWith('#/')) return null;
+  const parts = ref.slice(2).split('/');
+  let node = schema;
+  for (const part of parts) {
+    if (node == null || typeof node !== 'object') return null;
+    node = node[part];
+  }
+  return node || null;
+}
+function resolveRef(prop, defs) {
+  if (!prop || !prop.$ref) return prop || {};
+  const name = prop.$ref.replace(/^#\/(\$defs|definitions)\//, '');
+  return (defs && defs[name]) || prop;
+}
+function trimSchema(prop, trimEnums) {
+  const clone = JSON.parse(JSON.stringify(prop));
+  if (!trimEnums) return clone;
+  function trim(obj) {
+    if (!obj || typeof obj !== 'object') return;
+    if (Array.isArray(obj.enum) && obj.enum.length > 12) obj.enum = obj.enum.slice(0,5).concat([`... +${obj.enum.length-5} values`]);
+    for (const v of Object.values(obj)) { if (typeof v === 'object') trim(v); }
+  }
+  trim(clone);
+  return clone;
+}
+
+function buildFieldTable(props, req) {
+  if (!props || !Object.keys(props).length) return '';
+  const dash = '<span style="color:var(--gray-300)">—</span>';
+  let rows = '';
+  for (const [field, def] of Object.entries(props)) {
+    const type = getFieldType(def);
+    const cons = getFieldCons(def);
+    const isReq = (req || []).includes(field);
+
+    // Detectar $ref directo (objeto) o en items ($ref dentro de array)
+    let refTarget = '';
+    if (def && def.$ref) refTarget = def.$ref;
+    else if (def && def.items && def.items.$ref) refTarget = def.items.$ref;
+
+    let refLink = '';
+    if (refTarget) {
+      const isEnum      = refTarget.includes('/Enums/');
+      const refName     = refTarget.split('/').pop();
+      const displayName = refName.replace(/^Enum/, '').replace(/Wrapper$/i, '');
+      const onclick     = isEnum
+        ? `goToEnum('${esc(displayName)}');return false;`
+        : `scrollToBlockByName('${esc(refName)}');return false;`;
+      refLink = `<a href="javascript:void(0)"
+        style="text-decoration:none;cursor:pointer;display:inline-flex;align-items:center;gap:4px;
+              background:var(--gray-100);color:var(--generix-dark);padding:2px 8px;border-radius:4px;
+              font-family:monospace;font-size:.8rem;font-weight:500"
+        title="Ir a ${esc(refName)}"
+        onclick="${onclick}">🔗 ${esc(displayName)}</a>`;
+    }
+
+    // Combinar restricciones existentes + enlace en líneas separadas
+    const restrParts = [cons, refLink].filter(Boolean);
+    const restrHtml  = restrParts.length ? restrParts.join('<div style="height:6px"></div>') : dash;
+
+    rows += `<tr>
+      <td><span class="tag-req">${esc(field)}</span></td>
+      <td>${def && def.description ? esc(def.description) : dash}</td>
+      <td>${type ? `<span class="tag-type">${esc(type)}</span>` : dash}</td>
+      <td>${isReq ? `<span class="tag-req">${t('yes')}</span>` : `<span style="color:var(--gray-500)">${t('no')}</span>`}</td>
+      <td>${restrHtml}</td>
+    </tr>`;
+  }
+  return `<div class="field-tbl-wrap">
+    <p class="field-tbl-title">${t('table.fieldsTitle')}</p>
+    <table class="field-tbl">
+      <thead><tr><th>${t('table.field')}</th><th>${t('table.desc')}</th><th>${t('table.type')}</th><th>${t('table.req')}</th><th>${t('table.constraints')}</th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table></div>`;
+}
+function getFieldType(def) {
+  if (!def) return '';
+  if (def.$ref) return def.$ref.split('/').pop();
+  let t = def.type;
+  if (Array.isArray(t)) t = t.join(' | ');
+  if (t === 'array' && def.items) { const it = def.items.$ref ? def.items.$ref.split('/').pop() : (def.items.type||''); return it ? `array<${it}>` : 'array'; }
+  if (!t && Array.isArray(def.enum)) return 'enum';
+  return t || '';
+}
+function getFieldCons(def) {
+  if (!def) return '';
+  const c = [];
+  if (def.minLength != null) c.push(`minLength: ${def.minLength}`);
+  if (def.maxLength != null) c.push(`maxLength: ${def.maxLength}`);
+  if (def.minimum   != null) c.push(`min: ${def.minimum}`);
+  if (def.maximum   != null) c.push(`max: ${def.maximum}`);
+  if (def.minItems  != null) c.push(`minItems: ${def.minItems}`);
+  if (def.maxItems  != null) c.push(`maxItems: ${def.maxItems}`);
+  if (def.pattern)           c.push(`pattern: ${def.pattern}`);
+  if (def.examples)          c.push(`examples: ${JSON.stringify(def.examples)}`);
+  if (def.format)            c.push(`format: ${def.format}`);
+  if (def.default  !== undefined) c.push(`default: ${JSON.stringify(def.default)}`);
+  return c.map(esc).join('<br>');
+}
+function scrollToBlockByName(refName) {
+  const tries = [refName, refName + 'Wrapper', refName.replace(/Wrapper$/i, '')];
+  for (const name of tries) {
+    const header = [...document.querySelectorAll('#estructura-body .block-wrap .cp-header')]
+      .find(h => h.textContent.trim() === name);
+    if (header) { header.closest('.block-wrap').scrollIntoView({ behavior:'smooth', block:'start' }); return; }
+  }
+}
+function goToEnum(fieldName) {
+  const tab = document.querySelector('.tab-btn[data-tab="enumeraciones"]');
+  if (tab) tab.click();
+  setTimeout(() => {
+    const header = [...document.querySelectorAll('#enumeraciones-body .block-wrap .cp-header')]
+      .find(h => h.textContent.trim() === fieldName);
+    if (header) header.closest('.block-wrap').scrollIntoView({ behavior:'smooth', block:'start' });
+  }, 60);
+}
+function scrollToBlock(id, btn) {
+  document.querySelectorAll('.snav-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const el = document.getElementById(id);
+  if (el) el.scrollIntoView({ behavior:'smooth', block:'start' });
+}
+
+/* ═══ TAB 3 — ENUMERACIONES ═══ */
+function parseEnumMeanings(desc, values) {
+  desc = desc || '';
+  const slashIdx = desc.indexOf(' / ');
+  const general = (slashIdx >= 0 ? desc.slice(0, slashIdx) : desc).trim();
+  const rest = slashIdx >= 0 ? desc.slice(slashIdx + 3) : '';
+  const rows = [];
+  if (rest) {
+    const escRe = s => String(s).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const marks = [];
+    values.forEach(v => {
+      const re = new RegExp('(^|[\\s,;])(' + escRe(v) + ')\\s*=');
+      const m = re.exec(rest);
+      if (m) marks.push({ code: String(v), idx: m.index + m[1].length, eq: m.index + m[0].length });
+    });
+    marks.sort((a, b) => a.idx - b.idx);
+    marks.forEach((mk, i) => {
+      const end = i + 1 < marks.length ? marks[i + 1].idx : rest.length;
+      const meaning = rest.slice(mk.eq, end).trim().replace(/[,;]\s*$/, '').trim();
+      rows.push({ code: mk.code, meaning });
+    });
+  }
+  return { general, rows };
+}
+function renderEnumeraciones(schema) {
+  const enums = extractEnums(schema);
+  if (!enums.length) {
+    document.getElementById('enumeraciones-body').innerHTML = '<p style="color:var(--gray-500)">' + t('enums.none') + '</p>';
+    return;
+  }
+  let bodyHtml = '', navHtml = '';
+  enums.forEach((en, i) => {
+    const id = `enum-${i}`;
+    const snippet = JSON.stringify({ [en.defName]: en.raw }, null, 2);
+    let pillsHtml;
+    if (en.values.length <= 20) {
+      pillsHtml = en.values.map(v => `<span class="ev-pill">${esc(String(v))}</span>`).join('');
+    } else {
+      pillsHtml = en.values.slice(0,12).map(v => `<span class="ev-pill">${esc(String(v))}</span>`).join('') + `<span class="ev-more">${t('enums.more',{n:en.values.length-12})}</span>`;
+    }
+    navHtml += `<button class="snav-btn" onclick="scrollToBlock('${id}',this)">${esc(en.field)}</button>`;
+    bodyHtml += `
+      <div class="block-wrap" id="${id}">
+        <div class="block-grid">
+          <div class="code-panel">
+            <div class="cp-header">${esc(en.field)}</div>
+            <pre class="cp-pre">${esc(snippet)}</pre>
+          </div>
+          ${(() => {
+            const parsed = parseEnumMeanings(en.description, en.values);
+            const valBlock = parsed.rows.length
+              ? `<table class="field-tbl" style="margin-top:6px">
+                  <thead><tr><th style="width:90px">${t('enums.code')}</th><th>${t('enums.meaning')}</th></tr></thead>
+                  <tbody>${parsed.rows.map(r => {
+                    const isDef = en.default !== undefined && String(en.default) === String(r.code);
+                    return `<tr${isDef ? ' style="background:var(--generix-orange-soft)"' : ''}>
+                      <td><span class="tag-req">${esc(r.code)}</span></td>
+                      <td>${esc(r.meaning)}${isDef ? ' <span class="badge badge-cat" style="margin-left:6px">' + t('enums.default') + '</span>' : ''}</td>
+                    </tr>`;
+                  }).join('')}</tbody>
+                </table>`
+              : `<div class="enum-val-wrap">${pillsHtml}</div>`;
+            return `<div>
+              <div class="explanation-box"><p>${esc(parsed.general || t('noDesc'))}</p></div>
+              <div class="tech-details">
+                <p style="margin-top:10px"><strong>${t('enums.usedIn')}</strong> <code style="font-size:.8rem">${esc(en.path)}</code></p>
+                <h4>${t('enums.allowed',{n:en.values.length})}</h4>
+                ${valBlock}
+              </div>
+            </div>`;
+          })()}
+        </div>
+        <div class="block-divider"></div>
+      </div>`;
+  });
+  document.getElementById('enumeraciones-body').innerHTML      = bodyHtml;
+  document.getElementById('snav-btns-enumeraciones').innerHTML = navHtml;
+}
+
+function extractEnums(schema) {
+  const defs        = schema.$defs || schema.definitions || {};
+  const results     = [];
+  const seenFields  = new Set();
+  const seenDefs    = new Set();
+
+  function walk(obj, path, refName) {
+    if (!obj || typeof obj !== 'object') return;
+
+    // Resolver $ref antes de seguir
+    if (obj.$ref) {
+      const resolved = resolvePointer(obj.$ref, schema);
+      if (resolved && !seenDefs.has(obj.$ref)) {
+        seenDefs.add(obj.$ref);
+        walk(resolved, path, obj.$ref.split('/').pop());
+      }
+      return;
+    }
+
+    if (Array.isArray(obj.enum)) {
+      const key = path.split('.').pop().replace('[]', '');
+      if (!seenFields.has(key)) {
+        seenFields.add(key);
+        results.push({ field: key, path, type: obj.type || 'string', description: obj.description || '', values: obj.enum, default: obj.default, raw: obj, defName: refName || key });
+      }
+      return;
+    }
+
+    if (obj.properties)  for (const [k, v] of Object.entries(obj.properties)) walk(v, path ? `${path}.${k}` : k);
+    if (obj.items)       walk(obj.items, `${path}[]`);
+    if (obj.$defs)       for (const [k, v] of Object.entries(obj.$defs))       walk(v, k);
+    if (obj.definitions) for (const [k, v] of Object.entries(obj.definitions)) walk(v, k);
+  }
+
+  walk(schema, '');
+  return results;
+}
+
+/* ═══ TAB 4 — EJEMPLO ═══ */
+function renderEjemplo(examples, folder) {
+  _examples = [];
+  const inner = document.getElementById('ejemplo-inner');
+
+  if (!examples || !examples.length) {
+    inner.innerHTML = `<p style="color:var(--gray-500)">${t('example.none')}</p>`;
+    return;
+  }
+
+  let html = '<div class="ejemplo-grid">';
+  examples.forEach((ex, i) => {
+    const formatted = fmtJSON(ex.raw);
+    _examples.push(formatted);
+    const ghUrl = `https://github.com/${CONFIG.owner}/${CONFIG.repo}/blob/${CONFIG.branch}/${_detailDir}/${ex.name.split('/').map(encodeURIComponent).join('/')}`;
+    const pid = `ex-code-${i}`;
+    html += `
+      <div class="file-card" style="margin-bottom:18px">
+        <div class="file-card__head">
+          <div class="file-card__icon">🟨</div>
+          <div>
+            <div class="file-card__name">${esc(ex.name)}</div>
+            <div class="file-card__meta">JSON</div>
+          </div>
+        </div>
+        <div class="file-card__actions">
+          <a class="file-btn file-btn--primary" href="#" onclick="downloadExample(${i},'${esc(ex.name)}');return false;">${t('btn.download')}</a>
+          <a class="file-btn" target="_blank" href="${ghUrl}">${t('btn.viewGithub')}</a>
+          <button class="file-btn" onclick="toggleExampleCode('${pid}', this)">${t('btn.viewContent')}</button>
+        </div>
+        <div class="ejemplo-cp" id="${pid}" style="display:none;margin-top:6px">
+          <div class="ejemplo-mini" data-idx="${i}" data-name="${esc(ex.name)}"></div>
+        </div>
+      </div>`;
+  });
+  html += '</div>';
+  inner.innerHTML = html;
+}
+
+function toggleExampleCode(pid, btn) {
+  const el = document.getElementById(pid);
+  if (!el) return;
+  const open = el.style.display !== 'none';
+  el.style.display = open ? 'none' : 'block';
+  btn.textContent  = open ? t('btn.viewContent') : t('btn.hide');
+
+  // Al abrir, la tarjeta salta de línea y ocupa todo el ancho
+  const card = el.closest('.file-card');
+  if (card) card.classList.toggle('expanded', !open);
+
+  // Render diferido del JSON la primera vez que se abre
+  if (!open && !el.dataset.rendered) {
+    const mini = el.querySelector('.ejemplo-mini');
+    const idx  = mini ? Number(mini.dataset.idx) : 0;
+    const name = mini ? mini.dataset.name : 'JSON';
+    const raw  = _examples[idx];
+    if (raw != null) {
+      const header = `<span>${esc(name || 'JSON')}</span>` +
+                    `<button class="copy-btn" onclick="copyExample(${idx}, this)">${t('btn.copy')}</button>`;
+      renderJsonMinimap(el, raw, [], header);
+      el.dataset.rendered = '1';
+    }
+  }
+}
+
+/* ═══ TAB 5 — VERSIONES POR ENDPOINT ═══ */
+function jsEsc(s) {
+  return String(s == null ? '' : s).replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/\n/g, '\\n').replace(/\r/g, '');
+}
+
+function cleanVersionPath(p) {
+  return String(p || '').replace(/^\/+|\/+$/g, '');
+}
+
+async function loadRepoTreeFresh() {
+  const r = await fetch(
+    `https://api.github.com/repos/${CONFIG.owner}/${CONFIG.repo}/git/trees/${CONFIG.branch}?recursive=1&_=${Date.now()}`,
+    { headers: ghHeaders(), cache: 'no-store' }
+  );
+  if (!r.ok) throw new Error(`GitHub API ${r.status}`);
+  const data = await r.json();
+  try {
+    localStorage.setItem(_LS_KEY, JSON.stringify({ ts: Date.now(), tree: data.tree }));
+  } catch {}
+  return data.tree || [];
+}
+
+function extractVersionFromName(name) {
+  const m = String(name || '').match(/(?:^|[_\-])v(\d+(?:\.\d+)*)/i);
+  return m ? 'v' + m[1] : '';
+}
+
+function compareVersionNumbers(a, b) {
+  const pa = String(a || '').replace(/^v/i, '').split('.').map(n => parseInt(n, 10) || 0);
+  const pb = String(b || '').replace(/^v/i, '').split('.').map(n => parseInt(n, 10) || 0);
+  const len = Math.max(pa.length, pb.length);
+  for (let i = 0; i < len; i++) {
+    const diff = (pb[i] || 0) - (pa[i] || 0);
+    if (diff) return diff;
+  }
+  return 0;
+}
+
+async function renderEndpointVersions(folder) {
+  const status = document.getElementById('endpointVersionsStatus');
+  const cont = document.getElementById('endpointVersionsContainer');
+  if (!status || !cont) return;
+
+  status.textContent = t('loading');
+  cont.innerHTML = '';
+
+  try {
+    const tree = await loadRepoTreeFresh();
+    const base = cleanVersionPath(CONFIG.versionsPath || 'Versions');
+    const expectedFolder = String(folder || '').toLowerCase();
+    const files = tree
+      .filter(it => it.type === 'blob' && it.path.startsWith(base + '/'))
+      .map(it => {
+        const rel = it.path.slice(base.length + 1);
+        const parts = rel.split('/');
+        const versionFolder = parts[0] || '';
+        const name = parts[parts.length - 1] || '';
+        return { path: it.path, name, versionFolder, version: extractVersionFromName(name), size: it.size || 0 };
+      })
+      .filter(it => it.versionFolder.toLowerCase() === expectedFolder && it.name.toLowerCase().endsWith('.json'))
+      .sort((a, b) => compareVersionNumbers(a.version, b.version) || b.name.localeCompare(a.name, undefined, { numeric:true }));
+
+    if (!files.length) {
+      status.textContent = '';
+      cont.innerHTML = `<div class="highlight-box">${t('endpointVersions.none')}</div>`;
+      return;
+    }
+
+    const latest = files[0];
+    status.textContent = `${files.length} fichero(s) en ${base}/${latest.versionFolder}`;
+
+    let html = `
+      <div class="endpoint-version-current">
+        <strong>${t('endpointVersions.current')}</strong>
+        <span class="endpoint-version-pill">${esc(latest.version || latest.name)}</span>
+      </div>
+      <div class="file-grid">`;
+
+    files.forEach((file, i) => {
+      const pid = 'epv-' + _slug(file.path);
+      const cmpId = 'cmp-' + _slug(file.path);
+      const prev = files[i + 1];
+      const isCurrent = i === 0;
+      const compareBtn = prev
+        ? `<button class="file-btn" onclick="compareEndpointVersions('${jsEsc(file.path)}','${jsEsc(prev.path)}','${cmpId}',this)">${t('endpointVersions.compare')}</button>`
+        : '';
+
+      html += `
+        <div class="file-card">
+          <div class="file-card__head">
+            <div class="file-card__icon">${_fileIcon(file.name)}</div>
+            <div>
+              <div class="file-card__name endpoint-version-file">
+                <span>${esc(file.name)}</span>
+                ${isCurrent ? '<span class="badge-current">Actual</span>' : ''}
+              </div>
+              <div class="file-card__meta">JSON${file.version ? ' · ' + esc(file.version) : ''}</div>
+            </div>
+          </div>
+          <div class="file-card__actions">
+            <a class="file-btn file-btn--primary" target="_blank" href="${_versRaw(file.path)}">${t('btn.download')}</a>
+            <a class="file-btn" target="_blank" href="${_versGh(file.path)}">${t('btn.viewGithub')}</a>
+            <button class="file-btn" onclick="toggleVersPreview('${jsEsc(file.path)}','${pid}',this)">${t('btn.viewContent')}</button>
+            ${compareBtn}
+          </div>
+          <div class="file-preview" id="${pid}"><pre></pre></div>
+          <div class="version-compare-box" id="${cmpId}"></div>
+        </div>`;
+    });
+
+    html += '</div>';
+    cont.innerHTML = html;
+
+  } catch (e) {
+    status.textContent = '';
+    cont.innerHTML = `<div class="highlight-box"><strong>${t('versions.loadFail')}</strong><br>${esc(e.message)}</div>`;
+  }
+}
+
+function flattenForDiff(obj, prefix = '', out = {}) {
+  if (obj == null || typeof obj !== 'object') {
+    out[prefix || '(root)'] = JSON.stringify(obj);
+    return out;
+  }
+  if (Array.isArray(obj)) {
+    if (obj.every(v => v == null || typeof v !== 'object')) {
+      out[prefix || '(root)'] = JSON.stringify(obj);
+      return out;
+    }
+    obj.forEach((v, i) => flattenForDiff(v, `${prefix}[${i}]`, out));
+    return out;
+  }
+  const keys = Object.keys(obj);
+  if (!keys.length) {
+    out[prefix || '(root)'] = '{}';
+    return out;
+  }
+  keys.forEach(k => {
+    const next = prefix ? `${prefix}.${k}` : k;
+    flattenForDiff(obj[k], next, out);
+  });
+  return out;
+}
+
+function buildVersionDiff(oldObj, newObj) {
+  const oldFlat = flattenForDiff(oldObj);
+  const newFlat = flattenForDiff(newObj);
+  const added = [];
+  const removed = [];
+  const changed = [];
+  Object.keys(newFlat).forEach(k => {
+    if (!(k in oldFlat)) added.push(k);
+    else if (oldFlat[k] !== newFlat[k]) changed.push({ path:k, before:oldFlat[k], after:newFlat[k] });
+  });
+  Object.keys(oldFlat).forEach(k => {
+    if (!(k in newFlat)) removed.push(k);
+  });
+  return { added, removed, changed };
+}
+
+async function compareEndpointVersions(currentPath, previousPath, containerId, btn) {
+  const box = document.getElementById(containerId);
+  if (!box) return;
+  const card = box.closest('.file-card');
+
+  if (box.classList.contains('open')) {
+    box.classList.remove('open');
+    if (card) card.classList.remove('expanded');
+    if (btn) btn.textContent = t('endpointVersions.compare');
+    return;
+  }
+
+  // Cierra otras comparativas abiertas en el mismo grid para que solo una ocupe todo el ancho.
+  const grid = box.closest('.file-grid');
+  if (grid) {
+    grid.querySelectorAll('.version-compare-box.open').forEach(openBox => {
+      if (openBox !== box) openBox.classList.remove('open');
+      const openCard = openBox.closest('.file-card');
+      if (openCard && openCard !== card) openCard.classList.remove('expanded');
+    });
+  }
+
+  box.classList.add('open');
+  if (card) card.classList.add('expanded');
+  if (btn) btn.textContent = t('btn.hide');
+  box.innerHTML = `<div class="version-compare-head"><span>${t('endpointVersions.compareTitle')}</span></div><div class="version-compare-body"><p class="version-diff-muted">${t('loading')}</p></div>`;
+
+  try {
+    const [currentRaw, previousRaw] = await Promise.all([rawFetch(currentPath), rawFetch(previousPath)]);
+    let currentObj, previousObj;
+    try { currentObj = JSON.parse(currentRaw); previousObj = JSON.parse(previousRaw); }
+    catch { throw new Error('No se pudo interpretar alguno de los ficheros como JSON.'); }
+
+    const diff = buildVersionDiff(previousObj, currentObj);
+    const maxRows = 80;
+    const rows = [];
+
+    diff.added.slice(0, maxRows).forEach(path => rows.push(`<div class="version-diff-row added">+ ${esc(path)}</div>`));
+    diff.removed.slice(0, maxRows).forEach(path => rows.push(`<div class="version-diff-row removed">- ${esc(path)}</div>`));
+    diff.changed.slice(0, maxRows).forEach(ch => rows.push(`<div class="version-diff-row changed">~ ${esc(ch.path)}<br><span class="version-diff-muted">Antes:</span> ${esc(ch.before)}<br><span class="version-diff-muted">Ahora:</span> ${esc(ch.after)}</div>`));
+
+    const totalShown = rows.length;
+    const total = diff.added.length + diff.removed.length + diff.changed.length;
+    const more = total > totalShown ? `<p class="version-diff-muted" style="margin-top:12px">Mostrando ${totalShown} de ${total} cambio(s).</p>` : '';
+
+    box.innerHTML = `
+      <div class="version-compare-head">
+        <span>${t('endpointVersions.compareTitle')}</span>
+        <small>${esc(currentPath.split('/').pop())} ↔ ${esc(previousPath.split('/').pop())}</small>
+      </div>
+      <div class="version-compare-body">
+        <div class="version-diff-summary">
+          <span class="version-diff-chip added">${t('endpointVersions.added')}: ${diff.added.length}</span>
+          <span class="version-diff-chip removed">${t('endpointVersions.removed')}: ${diff.removed.length}</span>
+          <span class="version-diff-chip changed">${t('endpointVersions.changed')}: ${diff.changed.length}</span>
+        </div>
+        ${total ? `<div class="version-diff-list">${rows.join('')}</div>${more}` : `<p class="version-diff-muted">${t('endpointVersions.noChanges')}</p>`}
+      </div>`;
+  } catch (e) {
+    box.innerHTML = `<div class="version-compare-head"><span>${t('versions.loadFail')}</span></div><div class="version-compare-body"><p style="color:#cf1322">${esc(e.message)}</p></div>`;
+  }
+}
+
+/* ═══ TAB SWITCHING ═══ */
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const tab = btn.dataset.tab;
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b === btn));
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.toggle('active', p.id === `tab-${tab}`));
+  });
+});
+
+/* ═══ HELPERS ═══ */
+function esc(t) {
+  if (t == null) return '';
+  return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function fmtJSON(t) { try { return JSON.stringify(JSON.parse(t), null, 2); } catch { return t; } }
+function hlJSON(json) {
+  return json.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/("(?:\\u[a-fA-F0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(?:true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, m => {
+      if (/^"/.test(m)) return /:$/.test(m) ? `<span class="jk">${m}</span>` : `<span class="js">${m}</span>`;
+      if (/true|false/.test(m)) return `<span class="jb">${m}</span>`;
+      if (m === 'null') return `<span class="jnull">${m}</span>`;
+      return `<span class="jn">${m}</span>`;
+    });
+}
+function downloadBlob(content, fileName) {
+  if (!content) return;
+  const blob = new Blob([content], { type: 'application/json' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href     = url;
+  a.download = fileName;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+function downloadSchema(fileName) { downloadBlob(_schemaRaw, fileName); }
+function downloadExample(i, fileName) { downloadBlob(_examples[i], fileName); }
+function toggleRespSchema(mid, btn) {
+  const el = document.getElementById('resp-schema-' + mid);
+  if (!el) return;
+  const open = el.style.display !== 'none';
+  el.style.display = open ? 'none' : 'block';
+  btn.textContent = open ? t('btn.viewContent') : t('btn.hide');
+
+  // Al abrir, la tarjeta salta de línea y ocupa todo el ancho; al cerrar vuelve a su columna
+  const card = el.closest('.file-card');
+  const top  = el.closest('.resp-block-top');
+  if (card) card.classList.toggle('expanded', !open);
+  if (top)  top.classList.toggle('has-expanded', !open);
+
+  if (!open && !el.dataset.rendered) {
+    const s = _respSchemas[mid];
+    if (s && s.raw) {
+      const header = `<span>${esc(s.name || 'JSON')}</span>` +
+                    `<button class="copy-btn" onclick="copyRespSchema('${mid}', this)">${t('btn.copy')}</button>`;
+      renderJsonMinimap(el, s.raw, [], header);
+      el.dataset.rendered = '1';
+    }
+  }
+}
+function copyExample(i, btn) {
+  const text = _examples[i !== undefined ? i : 0];
+  if (!text) return;
+  navigator.clipboard.writeText(text).then(() => {
+    btn.textContent = t('btn.copied'); btn.classList.add('ok');
+    setTimeout(() => { btn.textContent = t('btn.copy'); btn.classList.remove('ok'); }, 2000);
+  });
+}
+function countTopFields(schema) {
+  const defs = schema.$defs || schema.definitions || {};
+  const seen = new Set();
+  let n = 0;
+  function walk(obj) {
+    if (!obj || typeof obj !== 'object') return;
+    if (obj.$ref) {
+      const name = obj.$ref.replace(/^#\/(\$defs|definitions)\//, '');
+      if (!seen.has(name) && defs[name]) { seen.add(name); walk(defs[name]); }
+      return;
+    }
+    if (obj.properties) {
+      n += Object.keys(obj.properties).length;
+      for (const v of Object.values(obj.properties)) walk(v);
+    }
+    if (obj.items) walk(obj.items);
+  }
+  walk(schema);
+  return n;
+}
+
+/* ═══ VERSIONS VIEW ═══ */
+const TEXT_EXT = ['json','xml','xsd','txt','md','csv','yaml','yml'];
+const FILE_ICONS = { json:'🟨', xml:'📃', xsd:'📐', csv:'📊', txt:'📄', md:'📝', pdf:'📕', zip:'🗜️' };
+const _versPreviewCache = {};
+
+function _ext(n){ const i=n.lastIndexOf('.'); return i>=0?n.slice(i+1).toLowerCase():''; }
+function _fileIcon(n){ return FILE_ICONS[_ext(n)] || '📁'; }
+function _isText(n){ return TEXT_EXT.includes(_ext(n)); }
+function _versRaw(path){ return `https://raw.githubusercontent.com/${CONFIG.owner}/${CONFIG.repo}/${CONFIG.branch}/${path.split('/').map(encodeURIComponent).join('/')}`; }
+function _versGh(path){ return `https://github.com/${CONFIG.owner}/${CONFIG.repo}/blob/${CONFIG.branch}/${path.split('/').map(encodeURIComponent).join('/')}`; }
+function _slug(s){ return s.replace(/[^A-Za-z0-9_-]/g,'-'); }
+
+async function showVersions() {
+  showView('view-versions');
+  await renderVersions();
+}
+async function renderVersions() {
+  const status = document.getElementById('versStatus');
+  const cont   = document.getElementById('versContainer');
+  const quick  = document.getElementById('versQuick');
+  status.textContent = t('loading'); cont.innerHTML = ''; quick.innerHTML = '';
+
+  try {
+    const tree   = await loadRepoTree();
+    const prefix = CONFIG.versionsPath + '/';
+    const files  = tree
+      .filter(it => it.type === 'blob' && it.path.startsWith(prefix))
+      .map(it => ({ path: it.path, size: it.size }));
+
+    if (!files.length) {
+      status.textContent = '';
+      cont.innerHTML = `<div class="highlight-box"><strong>${t('versions.emptyTitle')}</strong><br>
+        ${t('versions.emptyBody', { path: CONFIG.versionsPath })}<br>
+        <a class="download-link" target="_blank" href="https://github.com/${CONFIG.owner}/${CONFIG.repo}/tree/${CONFIG.branch}/${CONFIG.versionsPath}">${t('versions.viewFolder')}</a></div>`;
+      return;
+    }
+
+    // Agrupar por subcarpeta de primer nivel
+    const groups = {};
+    files.forEach(f => {
+      const rel = f.path.slice(prefix.length);
+      const parts = rel.split('/');
+      const group = parts.length > 1 ? parts[0] : '(raíz)';
+      const subdir = parts.slice(1, -1).join('/');
+      (groups[group] = groups[group] || []).push({ ...f, name: parts[parts.length-1], subdir });
+    });
+    const names = Object.keys(groups).sort((a,b) => a==='(raíz)'?-1:b==='(raíz)'?1:a.localeCompare(b));
+
+    status.textContent = t('versions.count', { n: files.length, m: names.length });
+    quick.innerHTML = names.map(g =>
+      `<a href="#grp-${_slug(g)}">${esc(g==='(raíz)'?t('versions.general'):g)} (${groups[g].length})</a>`).join('');
+
+    let html = '';
+    names.forEach(g => {
+      // const items = groups[g].sort((a,b) => a.name.localeCompare(b.name));
+      const items = groups[g].sort((a, b) =>
+        b.name.localeCompare(a.name, undefined, { numeric: true })
+      );
+      html += `<div class="folder-section" id="grp-${_slug(g)}">
+        <h3>📦 ${esc(g==='(raíz)'?t('versions.general'):g)}</h3><div class="file-grid">`;
+      items.forEach(f => {
+        const pid = 'pv-' + _slug(f.path);
+        const previewBtn = _isText(f.name)
+          ? `<button class="file-btn" onclick="toggleVersPreview('${esc(f.path)}','${pid}',this)">${t('btn.viewContent')}</button>` : '';
+        html += `<div class="file-card">
+          <div class="file-card__head">
+            <div class="file-card__icon">${_fileIcon(f.name)}</div>
+            <div><div class="file-card__name">${esc(f.name)}</div>
+              <div class="file-card__meta">${esc((_ext(f.name)||'file').toUpperCase())}${f.subdir?' · 📁 '+esc(f.subdir):''}</div></div>
+          </div>
+          <div class="file-card__actions">
+            <a class="file-btn file-btn--primary" target="_blank" href="${_versRaw(f.path)}">${t('btn.download')}</a>
+            <a class="file-btn" target="_blank" href="${_versGh(f.path)}">${t('btn.viewGithub')}</a>
+            ${previewBtn}
+          </div>
+          <div class="file-preview" id="${pid}"><pre></pre></div>
+        </div>`;
+      });
+      html += `</div></div>`;
+    });
+    cont.innerHTML = html;
+  } catch (e) {
+    status.textContent = '';
+    cont.innerHTML = `<div class="highlight-box"><strong>${t('versions.loadFail')}</strong><br>${esc(e.message)}</div>`;
+  }
+}
+async function toggleVersPreview(path, pid, btn) {
+  const box = document.getElementById(pid);
+  if (!box) return;
+  const card = box.closest('.file-card');
+  const grid = box.closest('.file-grid');
+
+  if (box.classList.contains('open')) {
+    box.classList.remove('open');
+    if (card) card.classList.remove('expanded');
+    btn.textContent = t('btn.viewContent');
+    return;
+  }
+
+  // Cierra otros previews/comparativas abiertos en el mismo grid para que el abierto ocupe todo el ancho.
+  if (grid) {
+    grid.querySelectorAll('.file-preview.open').forEach(openBox => {
+      if (openBox !== box) openBox.classList.remove('open');
+      const openCard = openBox.closest('.file-card');
+      if (openCard && openCard !== card) openCard.classList.remove('expanded');
+    });
+    grid.querySelectorAll('.version-compare-box.open').forEach(openBox => {
+      openBox.classList.remove('open');
+      const openCard = openBox.closest('.file-card');
+      if (openCard && openCard !== card) openCard.classList.remove('expanded');
+    });
+  }
+
+  box.classList.add('open');
+  if (card) card.classList.add('expanded');
+  btn.textContent = t('btn.hide');
+
+  const pre = box.querySelector('pre');
+  if (_versPreviewCache[path]) { pre.textContent = _versPreviewCache[path]; return; }
+  pre.textContent = t('loading');
+  try {
+    const res = await fetch(_versRaw(path));
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    let text = await res.text();
+    if (text.length > 60000) text = text.slice(0,60000) + '\n\n' + t('versions.truncated');
+    _versPreviewCache[path] = text;
+    pre.textContent = text;
+  } catch (e) { pre.textContent = t('versions.loadFailMsg') + e.message; }
+}
+
+/* ═══ VALIDADOR ═══ */
+try { 
+  window.discoverFilesAt = discoverFilesAt; 
+  window.rawFetch = rawFetch; 
+  window.hlJSON = hlJSON; 
+  window.renderJsonMinimap = renderJsonMinimap; 
+} catch(e){}
+
+async function showValidacion() {
+  showView('view-validacion');
+
+  const sel = document.getElementById('valSchema');
+  if (sel.dataset.loaded) return;
+  try {
+    const tree = await loadRepoTree();
+    const folders = buildCacheFromTree(tree)
+      .filter(f => f !== CONFIG.responsesPath)
+      .sort((a,b) => {
+        const na=(a.match(/(\d+)/)||[])[1], nb=(b.match(/(\d+)/)||[])[1];
+        return (na&&nb) ? (+na - +nb) : a.localeCompare(b);
+      });
+    let html = '<option value="">' + t('val.selectPlaceholder') + '</option>'
+      + folders.map(f => `<option value="${f}">${f}</option>`).join('');
+    const hasResp = tree.some(it => it.type==='blob' && it.path.startsWith(CONFIG.responsesPath + '/'));
+    if (hasResp) html += `<option value="__resp__">Responses</option>`;
+    sel.innerHTML = html;
+    sel.dataset.loaded = '1';
+  } catch (e) {
+    sel.innerHTML = '<option value="">' + t('val.loadError') + '</option>';
+  }
+}
+
+function renderJsonMinimap(container, jsonText, errorLineNumbers, headerHtml) {
+  const text = (jsonText || '').replace(/\u00a0/g,' ').trim();
+  if (!text) { container.innerHTML = ''; return; }
+  let formatted; try { formatted = JSON.stringify(JSON.parse(text), null, 2); } catch { formatted = text; }
+  const lines = formatted.split('\n');
+  const errorLines = new Set(Array.isArray(errorLineNumbers) ? errorLineNumbers : []);
+
+  function jtype(tok, next){
+    if (/^".*"$/.test(tok) && next === ':') return 'key';
+    if (/^".*"$/.test(tok)) return 'string';
+    if (/^-?\d+(\.\d+)?([eE][+-]?\d+)?$/.test(tok)) return 'number';
+    if (/^(true|false)$/.test(tok)) return 'boolean';
+    if (/^null$/.test(tok)) return 'null';
+    if (/^[{}\[\],:]$/.test(tok)) return 'punctuation';
+    return 'default';
+  }
+  function codeLine(line){
+    const re=/"(?:\\.|[^"\\])*"|-?\d+(?:\.\d+)?(?:[eE][+-]?\d+)?|true|false|null|[{}\[\],:]/g;
+    const ms=[...line.matchAll(re)]; if(!ms.length) return esc(line);
+    let html='', cur=0;
+    ms.forEach((m,i)=>{ const t=m[0], s=m.index, e=s+t.length, n=ms[i+1]&&ms[i+1][0], ty=jtype(t,n);
+      html+=esc(line.slice(cur,s))+`<span class="validator-json-${ty}">${esc(t)}</span>`; cur=e; });
+    html+=esc(line.slice(cur)); return html;
+  }
+  function miniLine(line, isErr){
+    const lead=(line.match(/^\s*/)||[''])[0].length, indent=Math.min(34, lead*2.3);
+    const toks=line.trim().match(/"(?:\\.|[^"\\])*"|-?\d+(?:\.\d+)?(?:[eE][+-]?\d+)?|true|false|null|[{}\[\],:]/g)||[];
+    if(!toks.length) return `<span class="validator-minimap-token" style="margin-left:${indent}px;width:8px"></span>`;
+    return toks.slice(0,14).map((t,i)=>{ const ty=isErr?'error':jtype(t,toks[i+1]); const w=Math.max(4,Math.min(32,t.length*2.1)); const ml=i===0?indent:0;
+      return `<span class="validator-minimap-token validator-minimap-token--${ty}" style="margin-left:${ml}px;width:${w}px"></span>`; }).join('');
+  }
+  const rows=lines.map((l,i)=>`<div class="validator-line ${errorLines.has(i+1)?'is-error':''}" data-line="${i+1}"><div class="validator-line-number">${i+1}</div><div class="validator-line-code">${codeLine(l)}</div></div>`).join('');
+  const mh=3, ch=Math.max(lines.length*mh, mh);
+  const marks=lines.map((l,i)=>`<div class="validator-minimap-code-line ${errorLines.has(i+1)?'is-error':''}" data-line="${i+1}" style="top:${i*mh}px;height:${mh}px">${miniLine(l, errorLines.has(i+1))}</div>`).join('');
+
+  container.innerHTML = `<div class="validator-code-shell"><div class="validator-code-panel">
+    ${headerHtml ? `<div class="validator-code-header">${headerHtml}</div>` : ''}
+    <div class="validator-code-body">
+      <div class="validator-code-scroll"><div class="validator-code-content">${rows}</div></div>
+      <div class="validator-code-minimap" aria-label="Minimapa del JSON">
+        <div class="validator-code-minimap-content" style="height:${ch}px">${marks}</div>
+        <div class="validator-minimap-viewport"></div>
+      </div>
+    </div></div></div>`;
+
+  const scroll=container.querySelector('.validator-code-scroll'), minimap=container.querySelector('.validator-code-minimap'),
+        mc=container.querySelector('.validator-code-minimap-content'), vp=container.querySelector('.validator-minimap-viewport');
+  let drag=false, off=0;
+  function syncVP(){
+    const sh=scroll.scrollHeight, cl=scroll.clientHeight, ms=Math.max(sh-cl,1), ratio=scroll.scrollTop/ms,
+          mmH=minimap.clientHeight, cH=mc.offsetHeight, maxOff=Math.max(cH-mmH,0), cOff=ratio*maxOff,
+          vH=Math.min(mmH, Math.max((cl/sh)*mmH, 28)), maxT=Math.max(mmH-vH,0), vT=ratio*maxT;
+    mc.style.transform=`translateY(${-cOff}px)`; vp.style.height=vH+'px'; vp.style.top=vT+'px';
+  }
+  function setScroll(cy, o){
+    const r=minimap.getBoundingClientRect(), vH=vp.getBoundingClientRect().height, maxT=Math.max(r.height-vH,1),
+          vT=Math.max(0, Math.min(maxT, cy-r.top-(o||0))), ratio=vT/maxT;
+    scroll.scrollTop=ratio*(scroll.scrollHeight-scroll.clientHeight);
+  }
+  minimap.addEventListener('wheel', e=>{ e.preventDefault(); scroll.scrollTop += e.deltaY*1.2; }, {passive:false});
+  minimap.addEventListener('pointerdown', e=>{ const vr=vp.getBoundingClientRect(), inside=e.clientY>=vr.top&&e.clientY<=vr.bottom;
+    drag=true; off=inside?e.clientY-vr.top:vr.height/2; setScroll(e.clientY,off); minimap.setPointerCapture(e.pointerId); e.preventDefault(); });
+  minimap.addEventListener('pointermove', e=>{ if(drag) setScroll(e.clientY,off); });
+  function stop(e){ if(!drag) return; drag=false; try{minimap.releasePointerCapture(e.pointerId);}catch{} }
+  minimap.addEventListener('pointerup', stop); minimap.addEventListener('pointercancel', stop);
+  scroll.addEventListener('scroll', syncVP, {passive:true});
+  requestAnimationFrame(syncVP);
+}
+
+/* ═══ VISTA RESPUESTAS (dos secciones) ═══ */
+function buildResponseFieldTable(schema) {
+  const dash = '<span style="color:var(--gray-300)">—</span>';
+  const rows = [];
+  function resolve(p){ return (p && p.$ref) ? (resolvePointer(p.$ref, schema) || p) : (p || {}); }
+
+  function walk(props, required, depth) {
+    required = required || [];
+    for (const [field, raw] of Object.entries(props || {})) {
+      const def  = resolve(raw);
+      const type = getFieldType(raw);
+      const cons = getFieldCons(raw);
+      const isReq = required.includes(field);
+
+      let refTarget = '';
+      if (raw && raw.$ref) refTarget = raw.$ref;
+      else if (raw && raw.items && raw.items.$ref) refTarget = raw.items.$ref;
+
+      let refLink = '';
+      if (refTarget && refTarget.includes('/Enums/')) {
+        const displayName = refTarget.split('/').pop().replace(/^Enum/, '');
+        const estilo = 'background:var(--gray-100);color:var(--generix-dark);padding:2px 8px;border-radius:4px;font-family:monospace;font-size:.8rem';
+        refLink = `<span style="${estilo}">enum: ${esc(displayName)}</span>`;
+      }
+
+      const restrParts = [cons, refLink].filter(Boolean);
+      const restrHtml = restrParts.length ? restrParts.join('<div style="height:6px"></div>') : dash;
+
+      const desc = (raw && raw.description) || def.description || '';
+      const indent = 8 + depth * 22;
+      const arrow = depth > 0 ? '<span class="rf-arrow">↳</span>' : '';
+
+      rows.push(`<tr>
+        <td style="padding-left:${indent}px"><span class="rf-name-wrap">${arrow}<span class="tag-req">${esc(field)}</span></span></td>
+        <td>${desc ? esc(desc) : dash}</td>
+        <td>${type ? `<span class="tag-type">${esc(type)}</span>` : dash}</td>
+        <td>${isReq ? `<span class="tag-req">${t('yes')}</span>` : `<span style="color:var(--gray-500)">${t('no')}</span>`}</td>
+        <td>${restrHtml}</td>
+      </tr>`);
+
+      if (def.type === 'object' && def.properties) {
+        walk(def.properties, def.required, depth + 1);
+      } else if (def.type === 'array' && def.items) {
+        const items = resolve(def.items);
+        if (items.properties) walk(items.properties, items.required, depth + 1);
+      }
+    }
+  }
+  walk(schema.properties, schema.required, 0);
+  if (!rows.length) return '';
+  return `<div class="field-tbl-wrap">
+    <table class="field-tbl">
+      <thead><tr><th>${t('table.field')}</th><th>${t('table.desc')}</th><th>${t('table.type')}</th><th>${t('table.req')}</th><th>${t('table.constraints')}</th></tr></thead>
+      <tbody>${rows.join('')}</tbody>
+    </table></div>`;
+}
+
+function renderRespuestaSection(schema, exRaw, exName, mid, schemaLink) {
+  const defs = schema.$defs || schema.definitions || {};
+  const r = schema['x-wms-response'] || {};
+    const headHtml = `<div class="resp-block-head">
+      <h2>${esc(schema.title || t('resp.response'))}</h2>
+      <p>${esc(schema.description || '')}</p>
+      ${r.transport ? `<div class="resp-transport">${esc(r.transport)}</div>` : ''}
+    </div>`;
+
+  let cardHtml = '';
+  if (schemaLink && schemaLink.name) {
+    const ghUrl = `https://github.com/${CONFIG.owner}/${CONFIG.repo}/blob/${CONFIG.branch}/${schemaLink.dir}/${schemaLink.name.split('/').map(encodeURIComponent).join('/')}`;
+    cardHtml = `<div class="file-card" style="margin:0">
+      <div class="file-card__head">
+        <div class="file-card__icon">🟨</div>
+        <div>
+          <div class="file-card__name">${esc(schemaLink.name)}</div>
+          <div class="file-card__meta">JSON · Schema</div>
+        </div>
+      </div>
+      <div class="file-card__actions">
+        <a class="file-btn file-btn--primary" href="#" onclick="downloadRespSchema('${mid}');return false;">${t('btn.download')}</a>
+        <a class="file-btn" target="_blank" href="${ghUrl}">${t('btn.viewGithub')}</a>
+        <button class="file-btn" onclick="toggleRespSchema('${mid}', this)">${t('btn.viewContent')}</button>
+      </div>
+      <div class="resp-schema-cp" id="resp-schema-${mid}" style="display:none;margin-top:6px"></div>
+    </div>`;
+  }
+
+  let h = `<div class="resp-block">`;
+  h += cardHtml
+    ? `<div class="resp-block-top">${headHtml}${cardHtml}</div>`
+    : headHtml;
+
+  const codes = schema['x-wms-status-codes'];
+  if (Array.isArray(codes) && codes.length) {
+    h += `<div class="resp-sub">${t('resp.httpCodes')}</div>
+      <table class="status-tbl"><thead><tr><th style="width:90px">${t('enums.code')}</th><th style="width:150px">${t('resp.state')}</th><th>${t('enums.meaning')}</th></tr></thead><tbody>`;
+    h += codes.map(cc => {
+      const cls = String(cc.code)[0]==='2' ? 'status-2xx' : String(cc.code)[0]==='4' ? 'status-4xx' : 'status-5xx';
+      return `<tr><td><span class="status-code ${cls}">${esc(cc.code)}</span></td><td>${esc(cc.label||'')}</td><td>${esc(cc.meaning||'')}</td></tr>`;
+    }).join('');
+    h += `</tbody></table>`;
+  }
+
+  const fieldTbl = buildResponseFieldTable(schema);
+  if (fieldTbl) {
+    h += `<div class="resp-sub">${t('resp.msgStruct')}</div>${fieldTbl}`;
+  }
+
+  const enums = extractEnums(schema);
+  if (enums.length) {
+    h += `<div class="resp-sub">${t('resp.enums')}</div>`;
+    enums.forEach(en => {
+      const parsed = parseEnumMeanings(en.description, en.values);
+      const body = parsed.rows.length
+        ? `<table class="field-tbl" style="margin-top:6px"><thead><tr><th style="width:120px">${t('enums.code')}</th><th>${t('enums.meaning')}</th></tr></thead><tbody>${
+            parsed.rows.map(rr => `<tr><td><span class="tag-req">${esc(rr.code)}</span></td><td>${esc(rr.meaning)}</td></tr>`).join('')}</tbody></table>`
+        : en.values.map(v => `<span class="ev-pill">${esc(String(v))}</span>`).join(' ');
+      h += `<div style="margin-bottom:16px"><div style="font-weight:600;margin-bottom:4px">${esc(en.field)}</div>
+        ${parsed.general ? `<div style="color:var(--gray-500);font-size:.9rem;margin-bottom:6px">${esc(parsed.general)}</div>` : ''}${body}</div>`;
+    });
+  }
+
+  const exId = `resp-ex-${mid}`;
+  h += `<div class="resp-sub">${t('resp.example')}</div><div id="${exId}"></div></div>`;
+  return { html: h, exId, exRaw, exName, mid };
+}
+let _respSections = {};
+function renderRespExample(mid) {
+  const s = _respSections[mid]; if (!s) return;
+  const el = document.getElementById(s.exId); if (!el || el.dataset.rendered) return;
+  el.dataset.rendered = '1';
+  if (!s.exRaw) { el.innerHTML = '<p style="color:var(--gray-500)">' + t('resp.noExample') + '</p>'; return; }
+  if (typeof renderJsonMinimap === 'function') {
+    renderJsonMinimap(el, s.exRaw, [], `<span>${esc(s.exName || 'JSON')}</span>`);
+  } else {
+    el.innerHTML = 
+    `<div style="background:var(--gray-900);border-radius:10px;padding:18px;overflow:auto">
+      <pre style="margin:0;color:#e2e8f0;font-family:'Courier New',monospace;font-size:.84rem">
+        ${hlJSON(fmtJSON(s.exRaw))}
+      </pre>
+    </div>`;
+  }
+}
+function showRespTab(mid, btn) {
+  const view = document.getElementById('view-respuestas');
+  view.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b === btn));
+  view.querySelectorAll('.tab-panel').forEach(p => p.classList.toggle('active', p.id === 'resp-panel-' + mid));
+  renderRespExample(mid);
+}
+let _respSchemas = {};
+function downloadRespSchema(mid) {
+  const s = _respSchemas[mid];
+  if (!s || !s.raw) return;
+  downloadBlob(s.raw, s.name);
+}
+function copyRespSchema(mid, btn) {
+  const s = _respSchemas[mid];
+  if (!s || !s.raw) return;
+  navigator.clipboard.writeText(fmtJSON(s.raw)).then(() => {
+    btn.textContent = t('btn.copied'); btn.classList.add('ok');
+    setTimeout(() => { btn.textContent = t('btn.copy'); btn.classList.remove('ok'); }, 2000);
+  });
+}
+async function showRespuestas() {
+  showView('view-respuestas');
+
+  const body = document.getElementById('respuestas-body');
+  body.innerHTML = '<p style="color:var(--gray-500)">' + t('loading') + '</p>';
+  try {
+    const dir = CONFIG.responsesPath;
+    const tree = await loadRepoTree();
+    const prefix = dir + '/';
+    const names = tree
+      .filter(it => it.type === 'blob' && it.path.startsWith(prefix) && !it.path.slice(prefix.length).includes('/'))
+      .map(it => it.path.slice(prefix.length));
+    const pick = re => names.find(n => re.test(n));
+    const sIni = pick(/schema.*initial/i), eIni = pick(/example.*initial/i);
+    const sCb  = pick(/schema.*callback/i), eCb  = pick(/example.*callback/i);
+
+    if (!sIni && !sCb) {
+      body.innerHTML = `<div class="highlight-box"><strong>${t('resp.noSchemas.title')}</strong><br>
+        ${t('resp.noSchemas.body', { dir: esc(dir) })}</div>`;
+      return;
+    }
+
+    const getRaw  = async n => n ? await rawFetch(`${dir}/${n}`) : null;
+    const [sIniRaw, sCbRaw, rawIni, rawCb] = await Promise.all([getRaw(sIni), getRaw(sCb), getRaw(eIni), getRaw(eCb)]);
+    const schemaIni = sIniRaw ? localizeNode(JSON.parse(sIniRaw)) : null;
+    const schemaCb = sCbRaw ? localizeNode(JSON.parse(sCbRaw)) : null;
+    _respSchemas = {};
+    if (sCb) _respSchemas.cb = { name: sCb, raw: sCbRaw, dir };
+
+    const labels = { ini: t('resp.labelIni'), cb: t('resp.labelCb') };
+    const sections = [];
+    if (schemaIni) sections.push(renderRespuestaSection(schemaIni, rawIni, eIni, 'ini', null));
+    if (schemaCb)  sections.push(renderRespuestaSection(schemaCb,  rawCb,  eCb,  'cb', { name: sCb, raw: sCbRaw, dir }));
+
+    _respSections = {};
+    sections.forEach(s => { _respSections[s.mid] = s; });
+
+    const navEl = document.getElementById('respuestas-nav');
+    const nav = sections.map((s, i) =>
+      `<button class="tab-btn ${i===0?'active':''}" onclick="showRespTab('${s.mid}', this)">${esc(labels[s.mid] || s.mid)}</button>`).join('');
+    const panels = sections.map((s, i) =>
+      `<div class="tab-panel ${i===0?'active':''}" id="resp-panel-${s.mid}">${s.html}</div>`).join('');
+
+    navEl.innerHTML = sections.length > 1
+      ? `<div class="tab-nav-inner"><div class="tab-nav">${nav}</div></div>`
+      : '';
+    navEl.className = sections.length > 1 ? 'tab-nav-outer' : '';
+    body.innerHTML = panels;
+
+    if (sections.length) renderRespExample(sections[0].mid);
+  } catch (e) {
+    body.innerHTML = `<div class="highlight-box" style="border-left-color:#cf1322"><strong>${t('detail.errorLoad')}</strong><br>${esc(e.message)}</div>`;
+  }
+}
+
+/* ── Start ───────────────────────────────────────────────── */
+init();
+</script>
+<!-- ═══ VALIDADOR (AJV) ═══ -->
+<script type="module">
+  import Ajv from "https://cdn.jsdelivr.net/npm/ajv@8/dist/2020/+esm";
+  import addFormats from "https://cdn.jsdelivr.net/npm/ajv-formats@2/+esm";
+
+  const sel      = document.getElementById("valSchema");
+  const dropzone = document.getElementById("dropzone");
+  const input    = document.getElementById("fileInput");
+  const result   = document.getElementById("result");
+  const errorList= document.getElementById("errorList");
+  const viewer   = document.getElementById("jsonViewer");
+
+  let _schemaCache = {};
+  let _lastFileText = null;
+
+  function schemaDir(value) {
+    return value === "__resp__" ? window.CONFIG.responsesPath : `${window.CONFIG.contentPath}/${value}`;
+  }
+  async function fetchSchema(value) {
+    if (_schemaCache[value]) return _schemaCache[value];
+    const dir = schemaDir(value);
+    const files = await window.discoverFilesAt(dir);
+    if (!files.schemaFile) throw new Error("No se encontró schema en " + dir);
+    const txt = await window.rawFetch(`${dir}/${files.schemaFile.name}`);
+    const schema = JSON.parse(txt);
+    _schemaCache[value] = schema;
+    return schema;
+  }
+
+  sel.addEventListener("change", () => {
+    const on = !!sel.value;
+    dropzone.classList.toggle("disabled", !on);
+    dropzone.childNodes[0].nodeValue = on
+      ? " " + window.t('val.dropzone.enabled') + " "
+      : " " + window.t('val.dropzone.disabled') + " ";
+    if (on && _lastFileText) processJSON(_lastFileText);
+  });
+
+  dropzone.onclick = () => { if (sel.value) input.click(); };
+  dropzone.ondragover = e => { e.preventDefault(); if (sel.value) dropzone.classList.add("dragover"); };
+  dropzone.ondragleave = () => dropzone.classList.remove("dragover");
+  dropzone.ondrop = e => {
+    e.preventDefault(); dropzone.classList.remove("dragover");
+    if (sel.value && e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]);
+  };
+  input.onchange = () => input.files[0] && handleFile(input.files[0]);
+
+  async function handleFile(file) { _lastFileText = await file.text(); processJSON(_lastFileText); }
+    function serializeWithMap(data) {
+    const lines = [], map = {};
+    const escKey = k => String(k).replace(/~/g,'~0').replace(/\//g,'~1');
+    function rec(value, ptr, indent, keyPrefix, comma) {
+      const pad = '  '.repeat(indent);
+      if (value !== null && typeof value === 'object') {
+        const isArr = Array.isArray(value);
+        const entries = isArr ? value.map((v,i)=>[i,v]) : Object.entries(value);
+        if (entries.length === 0) {
+          lines.push(pad + keyPrefix + (isArr?'[]':'{}') + (comma?',':''));
+          if (ptr !== undefined) map[ptr] = lines.length;
+          return;
+        }
+        lines.push(pad + keyPrefix + (isArr?'[':'{'));
+        if (ptr !== undefined) map[ptr] = lines.length;
+        entries.forEach(([k,v],i) => {
+          const childPtr = ptr + '/' + (isArr ? k : escKey(k));
+          const kp = isArr ? '' : (JSON.stringify(String(k)) + ': ');
+          rec(v, childPtr, indent+1, kp, i < entries.length-1);
+        });
+        lines.push(pad + (isArr?']':'}') + (comma?',':''));
+      } else {
+        lines.push(pad + keyPrefix + JSON.stringify(value) + (comma?',':''));
+        if (ptr !== undefined) map[ptr] = lines.length;
+      }
+    }
+    rec(data, '', 0, '', false);
+    return { lines, map };
+  }
+  function describeError(e){
+    const p = e.params || {};
+    switch(e.keyword){
+      case 'enum':            return window.t('verr.enum',{v:(p.allowedValues||[]).join(', ')});
+      case 'const':           return window.t('verr.const',{v:JSON.stringify(p.allowedValue)});
+      case 'maxLength':       return window.t('verr.maxLength',{v:p.limit});
+      case 'minLength':       return window.t('verr.minLength',{v:p.limit});
+      case 'pattern':         return window.t('verr.pattern',{v:p.pattern});
+      case 'format':          return window.t('verr.format',{v:p.format});
+      case 'type':            return window.t('verr.type',{v:p.type});
+      case 'maximum':         return window.t('verr.maximum',{v:p.limit});
+      case 'minimum':         return window.t('verr.minimum',{v:p.limit});
+      case 'exclusiveMaximum':return window.t('verr.exclusiveMaximum',{v:p.limit});
+      case 'exclusiveMinimum':return window.t('verr.exclusiveMinimum',{v:p.limit});
+      case 'multipleOf':      return window.t('verr.multipleOf',{v:p.multipleOf});
+      case 'maxItems':        return window.t('verr.maxItems',{v:p.limit});
+      case 'minItems':        return window.t('verr.minItems',{v:p.limit});
+      case 'required':        return window.t('verr.required',{v:p.missingProperty});
+      case 'additionalProperties': return window.t('verr.additionalProperties',{v:p.additionalProperty});
+      case 'oneOf':           return window.t('verr.oneOf');
+      default:                return e.message || window.t('verr.default');
+    }
+  }
+  function errorPath(e){
+    let path = e.instancePath || '';
+    if (e.keyword === 'required') path += '/' + e.params.missingProperty;
+    else if (e.keyword === 'additionalProperties') path += '/' + e.params.additionalProperty;
+    return path || '(raíz)';
+  }
+
+  async function processJSON(text) {
+    let data;
+    try { data = JSON.parse(text); }
+    catch { result.textContent = window.t('vstatus.syntaxInvalid'); errorList.textContent=""; viewer.textContent=""; return; }
+    let schema;
+    try { schema = await fetchSchema(sel.value); }
+    catch (e) { result.textContent = window.t('vstatus.schemaLoadFail'); errorList.textContent = "➡ " + e.message; viewer.textContent=""; return; }
+    let validate;
+    try { const ajv = new Ajv({ allErrors:true, strict:false }); addFormats(ajv); validate = ajv.compile(schema); }
+    catch (e) { result.textContent = window.t('vstatus.schemaCompileFail'); errorList.textContent = "➡ " + e.message; viewer.textContent=""; return; }
+    const valid = validate(data);
+    if (valid) {
+      window._valErrorLines = [];
+      viewer.textContent = JSON.stringify(data, null, 2);
+      result.textContent = window.t('vstatus.valid'); errorList.textContent = "";
+    } else {
+      const { lines, map } = serializeWithMap(data);
+      window._valErrorLines = validate.errors.map(e => map[e.instancePath]).filter(Boolean);
+      viewer.textContent = lines.join("\n");
+      result.textContent = window.t('vstatus.invalid');
+      errorList.textContent = validate.errors.map(e => `➡ ${errorPath(e)} → ${describeError(e)}`).join("\n");
+    }
+  }
+
+  /* ── Capa visual ── */
+  function esc(t){ return String(t==null?"":t).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m])); }
+  function statusMeta(msg){
+    if(!msg.trim()) return {kind:'info',badge:window.t('vmeta.noStatus.badge'),title:window.t('vmeta.noStatus.title'),text:window.t('vmeta.noStatus.text')};
+    if(msg.includes('✅')) return {kind:'success',badge:window.t('vmeta.ok.badge'),title:window.t('vmeta.ok.title'),text:msg.replace('✅','').trim()||window.t('vmeta.ok.text')};
+    if(msg.includes('❌')) return {kind:'error',badge:window.t('vmeta.err.badge'),title:window.t('vmeta.err.title'),text:msg.replace('❌','').trim()||window.t('vmeta.err.text')};
+    if(msg.includes('⚠️')) return {kind:'warning',badge:window.t('vmeta.warn.badge'),title:window.t('vmeta.warn.title'),text:msg.replace('⚠️','').trim()};
+    return {kind:'info',badge:window.t('vmeta.info.badge'),title:window.t('vmeta.info.title'),text:msg};
+  }
+  function parseErrors(raw){
+    return (raw||'').replace(/\u00a0/g,' ').split('➡').map(s=>s.trim()).filter(Boolean).map((it,i)=>{
+      const p=it.split('→'); return {index:i+1, path:(p[0]||'(raíz)').trim(), message:(p.slice(1).join('→')||'Error').trim()};
+    });
+  }
+  function renderSummary(msg, raw){
+    const t=document.getElementById('validationSummary'), errs=parseErrors(raw), m=statusMeta(msg);
+    let tbl='';
+    if(errs.length){
+      tbl=`<table class="val-err-tbl"><thead><tr><th>${window.t('vtable.num')}</th><th>${window.t('vtable.field')}</th><th>${window.t('vtable.error')}</th></tr></thead><tbody>${
+        errs.map(e=>`<tr><td>${e.index}</td><td><code>${esc(e.path)}</code></td><td>${esc(e.message)}</td></tr>`).join('')}</tbody></table>`;
+    }
+    t.classList.remove('val-empty');
+    t.innerHTML=`<div class="val-status-card ${m.kind}"><div class="val-status-head">
+      <div class="val-status-title">${esc(m.title)}</div><div class="val-status-badge">${esc(m.badge)}</div></div>
+      <p class="val-status-text">${esc(m.text)}</p></div>${tbl}`;
+  }
+  function renderViewer(raw){
+    const cont=document.getElementById('jsonViewerContainer'), text=(raw||'').trim();
+    if(!text){ cont.innerHTML=''; return; }
+    const el = Array.isArray(window._valErrorLines) ? window._valErrorLines : [];
+    window.renderJsonMinimap(cont, text, el, '<span>' + window.t('vviewer.title') + '</span>');
+  }
+  function sync(){ renderSummary(result.textContent||'', errorList.textContent||''); renderViewer(viewer.textContent||''); }
+  const obs=new MutationObserver(sync);
+  [result,errorList,viewer].forEach(n=>obs.observe(n,{childList:true,subtree:true,characterData:true}));
+</script>
+</body>
+</html>

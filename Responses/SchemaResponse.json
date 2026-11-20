@@ -1,0 +1,158 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Generix-b2b/API_JSON_WMS/raw/main/Messages/response/SchemaRESPONSE.json",
+  "title": "ACK - Document reception acknowledgement and validation result",
+  "x-wms-icon": "ACK",
+  "x-wms-author": "GENERIX Group Spain",
+  "x-wms-endpoint": {
+    "method": "POST",
+    "path": "https://[URL_Client]/endpoint",
+    "category": "Outbound",
+    "version": "v1.1",
+    "releaseDate": "2026-06-22"
+  },
+  "description": "JSON for ACK message returned by the middleware: reports the reception status of an inbound document and, after processing, the result of its schema validation",
+  "type": "object",
+  "properties": {
+    "response": {
+      "description": "Status document",
+      "type": "object",
+      "properties": {
+        "receptionAck": {
+          "description": "Asynchronous acknowledgement returned when the document is received by the middleware",
+          "$ref": "#/$defs/immediateACK"
+        },
+        "validationResult": {
+          "description": "CValidation outcome returned after the document is processed",
+          "$ref": "#/$defs/validationDetail"
+        }
+      },
+      "oneOf": [
+        {
+          "required": ["receptionAck"]
+        },
+        {
+          "required": ["validationResult"]
+        }
+      ],
+      "additionalProperties": false
+    }
+  },
+  "required": ["response"],
+  "additionalProperties": false,
+  "$defs": {
+    "immediateACK": {
+      "description": "Asynchronous acknowledgement returned when the document is received by the middleware",
+      "type": "object",
+      "properties": {
+        "uuid": {
+          "description": "Unique identifier of the message",
+          "type": "string",
+          "minLength": 1
+        },
+        "endpoint": {
+          "description": "Target endpoint",
+          "type": "string",
+          "minLength": 1
+        },
+        "timestamp": {
+          "description": "Processing timestamp (Format: YYYYMMDDHHMMSS)",
+          "type": "string",
+          "pattern": "^[1-9][0-9]{3}(0[1-9]|1[0-2])(0[1-9]|[12][0-9]|3[01])([01][0-9]|2[0-3])([0-5][0-9])([0-5][0-9])$",
+          "examples": ["20250125125912"]
+        },
+        "label": {
+          "description": "Descriptive text of the message status",
+          "type": "string",
+          "minLength": 1
+        },
+        "success": {
+          "description": "Success indicator - see EnumSuccess",
+          "$ref": "#/$defs/Enums/EnumSuccess"
+        }
+      },
+      "required": ["uuid", "endpoint", "timestamp", "label", "success"],
+      "additionalProperties": false
+    },
+    "validationDetail": {
+      "description": "Validation outcome returned after the document is processed",
+      "type": "object",
+      "properties": {
+        "uuid": {
+          "description": "Unique identifier of the message",
+          "type": "string",
+          "minLength": 1
+        },
+        "message": {
+          "description": "Message code - see EnumMessageCode",
+          "$ref": "#/$defs/Enums/EnumMessageCode"
+        },
+        "timestamp": {
+          "description": "Processing timestamp (Format: YYYYMMDDHHMMSS)",
+          "type": "string",
+          "pattern": "^[1-9][0-9]{3}(0[1-9]|1[0-2])(0[1-9]|[12][0-9]|3[01])([01][0-9]|2[0-3])([0-5][0-9])([0-5][0-9])$",
+          "examples": ["20250125125912"]
+        },
+        "errors": {
+          "description": "List of validation errors found",
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 999,
+          "items": {
+            "$ref": "#/$defs/errorDetail"
+          }
+        }
+      },
+      "required": ["uuid", "message", "timestamp", "errors"],
+      "additionalProperties": false
+    },
+    "errorDetail": {
+      "description": "List of validation errors found",
+      "type": "object",
+      "properties": {
+        "line": {
+          "description": "Line number where the error was detected",
+          "type": "string",
+          "minLength": 1
+        },
+        "type": {
+          "description": "Data type of the field that failed validation - see EnumErrorType",
+          "$ref": "#/$defs/Enums/EnumErrorType"
+        },
+        "field": {
+          "description": "Name of the field that failed validation",
+          "type": "string",
+          "minLength": 1
+        },
+        "receivedValue": {
+          "description": "Value received for the field",
+          "type": "string"
+        },
+        "error": {
+          "description": "Descriptive validation error message",
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": ["line", "type", "field", "receivedValue", "error"],
+      "additionalProperties": false
+    },
+    "Enums": {
+      "EnumSuccess": {
+        "description": "Success indicator / 1 = success, 0 = error",
+        "type": "string",
+        "enum": ["0", "1"]
+      },
+      "EnumMessageCode": {
+        "description": "Message code / M08 = Load Table, M10 = Supplier Master Data, M20 = Customer Master Data, M30 = Product Master Data, M40 = Reception Orders, M49 = Dispatch Advice, M50 = Delivery Orders",
+        "type": "string",
+        "enum": ["M08", "M10", "M20", "M30", "M40", "M49", "M50"]
+      },
+      "EnumErrorType": {
+        "description": "Data type of the field that failed validation / enum = Enumerations, string = Text, string_num = Integer number in text format, integer = Integer number, string_double = Decimal number in text format, double = Decimal Number, date = Date YYYYMMDD, time = Time HHMMSS, boolean = TRUE or FALSE",
+        "type": "string",
+        "enum": ["enum", "string", "string_num", "integer", "string_double", "double", "date", "time", "boolean"]
+      }
+    }
+  }
+}
