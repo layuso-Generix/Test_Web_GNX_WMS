@@ -12,7 +12,7 @@
     "category": "Outbound",
     "version": "v1.1",
     "releaseDate": "2026-11-19",
-    "comingSoon": false 
+    "comingSoon": true 
   },
   "description": "JSON forTEST",
   "description_es": "JSON para TEST",
